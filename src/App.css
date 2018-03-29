@@ -3,6 +3,83 @@
   
 }
 
+.coin_container{
+  display: inline-block;
+  /*border: 1px solid black;*/
+  animation: spin 6s infinite linear;
+      /*transform: rotateY(45deg);*/
+
+}
+/*.coin_container:before{
+  display: inline-block;
+  content: ' ';
+  width: 1em;
+  height: 1em;
+  background: red;
+  transform: rotateY(90deg);
+
+  animation: twist 6s infinite linear;
+}*/
+
+@keyframes twist{
+  0%{
+    transform: rotateY(90deg) translateX(-1em);
+  }
+  50%{
+    transform: rotateY(180deg)translateX(0em);
+
+  }
+  100%{
+    transform: rotateY(90deg)translateX(1em);
+  }
+}
+/*.coin_left{
+  display: inline-block;
+  background: blue;
+  width: 1em;
+  height: 1em;
+  transform: rotateY( -45deg)  translateZ(1em); 
+}
+
+.coin_right{
+  display: inline-block;
+  transform: rotateY( 45deg)  translateZ(1em); 
+  background: red;
+  width: 1em;
+  height: 1em;
+
+  
+}*/
+
+.Coin_face{
+  background: goldenrod;
+  display: inline-block;
+  padding: 1em;
+/*  width: 20px;
+  height: 20px;*/
+  border-radius: 50%;
+
+  perspective: 1000px;
+  transform-style: preserve-3d;
+
+
+}
+
+.coin_container:hover{
+  animation: none;
+  transform: scale(1.1);
+}
+
+@keyframes spin{
+  0%{
+    transform: rotateY(0deg);
+  }
+  100%{
+    transform: rotateY(360deg);
+  }
+}
+
+
 #background_image { 
   background: url(./small_file_island_table.jpeg) no-repeat fixed; 
   -webkit-background-size: cover;
@@ -35,6 +112,19 @@
   color: antiquewhite;
   font-size: 2em;
 
+}
+.clickable{
+  cursor: pointer;
+}
+
+.user_events_grid{
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  grid-gap: 2em;
+}
+
+.user_events_grid *{
+  color:red;
 }
 
 .topbar{

@@ -1,14 +1,17 @@
 import React from 'react';
 import {connect} from "react-redux";
-import store from '../../store';
+// import store from '../../store';
 
 import ERC721MintableToken_abi from './ERC721MintableToken_abi.js';
 import ERC721Crowdsale_abi from './ERC721Crowdsale_abi.js';
 import RefundVault_abi from './RefundVault_abi.js';
+import utils from '../utils/utils.js'
 import toastr from 'toastr'
 
 const web3 = window.web3
 var ERC721MintableToken_contract;
+const block_hash = [];
+
 class Blockchain_data extends React.Component{
 
   constructor(props){
@@ -24,6 +27,7 @@ class Blockchain_data extends React.Component{
       type:"ERC721MintableToken_CONTRACT_OBJ", 
       token_obj:ERC721MintableToken_contract, 
     })
+
 
 
     console.log(ERC721MintableToken_contract)
@@ -52,6 +56,7 @@ class Blockchain_data extends React.Component{
   }
 
   get_data_array(){
+    const iteratore_counter=0;
     const data_array = [
       'owner',
       'totalSupply',
@@ -60,22 +65,22 @@ class Blockchain_data extends React.Component{
       "prop_token_counter", 
       "_crowdsale_counter"
       ];
-    data_array.forEach((v, i)=>{
+    data_array.forEach((v)=>{
       ERC721MintableToken_contract[v]((e, r)=>{
         if(e){
-          console.log(i+':'+e)
+          console.log(v+':'+e)
         } else{
           // if(i==="owner" || i === "get_wei_balance"){
           //   var owner_item = App.make_owner_item()
           //   $(sidebar_el).append(owner_item)
           // }
-          console.log(i+':'+r)
+          console.log(v+':'+r)
           const type = v.toUpperCase()
           this.props.dispatch({type:`ERC721MintableToken_${type}`,[v]:r})
 
           // App.data[i]=r
           // $(sidebar_el).append(`<div>${i}: ${r}</div>`)
-
+          utils.call_when_done(data_array, iteratore_counter, this.setTokenWatchers())
         }
       })
     })
@@ -97,12 +102,26 @@ class Blockchain_data extends React.Component{
         this.props.dispatch({type:'web3/RECEIVE_ACCOUNT', address:r[0]})
 
 
-      web3.eth.getBalance(r[0],(e, r)=>{
-        if(e){console.log(e)}
-          const balance = web3.fromWei(r.toNumber(), 'ether')
-          toastr.info(`Your Wei Balance: ${balance}`)
-          this.props.dispatch({type:"USER_BALANCE", balance:balance})
-      })
+        try {//throws error if metamast not logged in
+          web3.eth.getBalance(r[0],(e, r)=>{
+            if(e){
+              console.log(e)
+              this.props.dispatch({type:"UI_ERR", e:e})
+              return
+
+            }
+              const balance = web3.fromWei(r.toNumber(), 'ether')
+              toastr.info(`Your Wei Balance: ${balance}`)
+              this.props.dispatch({type:"USER_BALANCE", balance:balance})
+          })
+        }catch(e){
+          console.log('error caught')
+          console.log(e)
+          this.props.dispatch({type:"UI_ERR", e:e})
+
+        }
+
+
     })
 
   }
@@ -111,16 +130,17 @@ class Blockchain_data extends React.Component{
 
   setTokenWatchers(){
      const token_events_array = [
-       // 'Transfer'
-       'Approval'
-       // ,'Seed_Tokes_Minted'
-       // ,'Crowdsale_initiated'
-       // ,'Prop_token_minted'
+       'Transfer'
+       ,'Approval'
+       ,'Seed_Tokes_Minted'
+       ,'Crowdsale_initiated'
+       ,'Prop_token_minted'
      ]
-
+     console.log(this.props.web3.address)
      token_events_array.forEach((event)=>{
        let event_event = ERC721MintableToken_contract[event](
-         {}, {fromBlock:0, toBlock:'latest'})
+         // {_to:this.props.web3.address}, {fromBlock:0, toBlock:'latest'})
+         {}, {fromBlock:"latest", toBlock:'latest'})
        event_event.watch((e, r)=>{
          console.log(event+'_event');
          if(e){
@@ -128,6 +148,10 @@ class Blockchain_data extends React.Component{
            console.log('error')
            console.log(e)
          }else if (r){
+          if(!this.check_block(r)){
+            console.log('blocking duplicate')
+            return
+          }
           //TODO log reulst
            console.log(r)
            //emiting events to store, do listeners(reducers) exist
@@ -143,10 +167,49 @@ class Blockchain_data extends React.Component{
 
   }
 
+  check_block(_blockHash){
+    console.log(_blockHash.blockNumber)
+    if( this.get_stored_block_hash().indexOf(_blockHash.blockNumber) === -1){
+      this.add_blockhash_to_stored(_blockHash.blockNumber)
+      console.log('new blockhash')
+      console.log(_blockHash.blockNumber)
+
+      return true
+    }else{
+      console.log('already have')
+      // console.log(_blockHash)
+
+      // return false
+      return true
+    }
+  }
+  get_stored_block_hash(){
+    return block_hash;
+  }
+  add_blockhash_to_stored(_blockHash){
+    block_hash.push(_blockHash)
+  }
+  get_balanceOf_crowdsale(_acct){
+    ERC721MintableToken_contract.balanceOf(_acct, (e, r)=>{
+      if(e){
+        this.props.dispatch({
+          type:'ERROR', error:e
+        })
+        console.log(e)
+        return
+      }else{
+        console.log(r)
+        this.props.dispatch({
+          type:'BALANCE_OF_CROWDSALE', address:_acct, balance:r.toNumber()
+        })
+      }
+    })
+  }
   getAllCrowdsaleObjsdata(){
     ERC721MintableToken_contract._crowdsale_counter((e, r)=>{
       const count = r
       console.log('CROWDSALE COUNT LETS GET tHIS mANY '+count)
+      console.log('does i have '+this.props.crowdsale_count)
       for ( let x = 0 ; x < count ; x++){
         ERC721MintableToken_contract.get_property_by_id(x, (e, r)=>{
           if (e) {
@@ -162,6 +225,7 @@ class Blockchain_data extends React.Component{
               type:'CROWDSALE_DATA_OBJ',
               crowdsale_obj:{count, account, visible, wallet_account}
             })
+            this.get_balanceOf_crowdsale(account)
           }
         })
       }

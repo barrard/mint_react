@@ -35,8 +35,8 @@ class Top_infobar extends React.Component{
 
   render(){
     var coins = []
-console.log('RENDER TOP INFO BAR!!!!!!')
-    if (this.props.prop_token_counter) {
+    console.log('RENDER TOP INFO BAR!!!!!!')
+    if (this.props.my_tokens) {
       console.log('GOT TOKENS!!!!!!!')
       this.props.my_tokens.forEach((i)=>{ 
       console.log('ANOTHER COOOOIIIINN!!!!!!!')
@@ -71,7 +71,11 @@ console.log('RENDER TOP INFO BAR!!!!!!')
 
 const Coin = (props)=>{
   return(
-    <div>{props.id}</div>
+    <div className="coin_container">
+      <div className="Coin_face">{props.id}</div>
+      <div className='coin_right'></div>
+      <div className='coin_left'></div>
+    </div>
   )
 }
 

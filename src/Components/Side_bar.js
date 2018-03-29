@@ -3,9 +3,9 @@ import {connect} from 'react-redux';
 import toastr from 'toastr'
 // import web3 from 'web3'
 import utils from './utils/utils'
-import kaChing_m4a from '../ka-ching_sound_effect.m4a'
-import crowd_cheer_sound from '../small_crowd_cheering_and_clapping.wav.mp3'
-import coin_drop from '../COIN_DROPPED_ON_TABLE.mp3';
+import kaChing_m4a from './sounds/ka-ching_sound_effect.m4a'
+import crowd_cheer_sound from './sounds/small_crowd_cheering_and_clapping.wav.mp3'
+import coin_drop from './sounds/COIN_DROPPED_ON_TABLE.mp3';
 
 const web3 = window.web3
 
@@ -21,52 +21,72 @@ class Side_bar extends React.Component{
 
   buy_token(){
     console.log('buy token')
-    web3.eth.sendTransaction({
-      from:web3.eth.coinbase,
-      to:this.props.tokens.ERC721MintableToken_address,
-      value:web3.toWei(1, "ether")
-    }, function(e, _txHash){
-      if(e){
-        utils.hide_spinner('#block-spinner')
-        toastr.warning(e, 'Failed to send Ether')
-        console.log('an error occured')
-        console.log(e)
-      }else if(_txHash){
-        utils.playSound(kaChing_m4a);
-        utils.call_when_mined(_txHash, function(){
+    try{
+      web3.eth.sendTransaction({
+        from:web3.eth.coinbase,
+        to:this.props.tokens.ERC721MintableToken_address,
+        value:web3.toWei(1, "ether")
+      }, (e, _txHash)=>{
+        if(e){
           utils.hide_spinner('#block-spinner')
-          utils.playSound(coin_drop);
-          
-        })
+          toastr.warning('Failed to send Ether')
+          console.log('an error occured')
+          console.log(e)
+        }else if(_txHash){
+          console.log(_txHash)
+          utils.playSound(kaChing_m4a);
+          utils.call_when_mined(_txHash, ()=>{
+            utils.hide_spinner('#block-spinner')
+            utils.playSound(coin_drop);
+            toastr.info(`Your Token has been delivered`)
+            
+          })
 
-        toastr.success(_txHash, 'Success! Your token is on it\'s way soon')
-        console.log(_txHash)
-      }
+          toastr.success(_txHash, 'Success! Your token is on it\'s way soon')
+          console.log(_txHash)
+        }
 
-    })
+      })
+    }catch(e){
+      console.log('error caught')
+      console.log(e)
+      this.props.dispatch({type:"UI_ERR", e:e})
+
+    }
+
   }
 
   spend_token(){
     console.log('spend token')
-    this.props.tokens.contract_obj.get_one_OwnerToken_id(this.props.address, (e, r)=>{
-      console.log(e)
-      console.log(r)
-      this.props.tokens.contract_obj.spend_CS_Token(r, (e, txHash)=>{
-        if(e){
-          toastr.error(e)
-          return
-        }else{
-          utils.call_when_mined(txHash, function(){
-          utils.hide_spinner('#block-spinner')
-          utils.playSound(crowd_cheer_sound);
+    try{
+      this.props.tokens.contract_obj.get_one_OwnerToken_id(this.props.address, (e, r)=>{
+        console.log(e)
+        console.log(r)
+        const token_id = r.toNumber()
+        this.props.tokens.contract_obj.spend_CS_Token(r, (e, txHash)=>{
+          if(e){
+            toastr.error(e)
+            return
+          }else{
+            utils.call_when_mined(txHash, function(){
+            utils.hide_spinner('#block-spinner')
+            utils.playSound(crowd_cheer_sound);
+            toastr.info(txHash, 'Token '+token_id+' created a crowdsale')
+
+          })
+
+          toastr.success(txHash, 'Success! Your token is on it\'s way soon')
+          console.log(txHash)
+        }
+
         })
-
-        toastr.success(txHash, 'Success! Your token is on it\'s way soon')
-        console.log(txHash)
-      }
-
       })
-    })
+    }catch(e){
+      console.log('error caught')
+      console.log(e)
+      this.props.dispatch({type:"UI_ERR", e:e})
+
+    }
 
 
   }

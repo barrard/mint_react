@@ -21,6 +21,12 @@ export default {
         }
     })
   },
+  call_when_done:(array, count, func)=>{
+    if(count == array.length-1){
+      func()
+    }
+
+  },
 
   activate_spinner:(_spinner)=>{
     console.log('activate_spinner')
