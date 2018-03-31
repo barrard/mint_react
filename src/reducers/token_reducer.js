@@ -24,8 +24,8 @@ export default function reducer(state={
   },
 
 
-  // ERC721MintableToken_address:"0x769387d444ff8a4059983186deadcd1ab8e99390",
-  ERC721MintableToken_address:"0xd008982422687e2e005dd931bcefac532e48201d",//Rinkeby
+  ERC721MintableToken_address:"0x3d3Dd4E13674cC2c59E8684d6d818510cCEdc6cB",//Rinkeby
+  // ERC721MintableToken_address:"0xd008982422687e2e005dd931bcefac532e48201d",//OldRinkeby
   contract_obj:'', owner:'', prop_token_counter:'', _crowdsale_counter:'', crowdsaleObj:{}
 
 }, action) {

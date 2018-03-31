@@ -2,23 +2,159 @@
 const ERC721Crowdsale = 
 JSON.parse(`[
   {
-    "constant": true,
+    "anonymous": false,
+    "inputs": [
+      {
+        "indexed": true,
+        "name": "purchaser",
+        "type": "address"
+      },
+      {
+        "indexed": true,
+        "name": "beneficiary",
+        "type": "address"
+      },
+      {
+        "indexed": false,
+        "name": "value",
+        "type": "uint256"
+      },
+      {
+        "indexed": false,
+        "name": "amount",
+        "type": "uint256"
+      }
+    ],
+    "name": "TokenPurchase",
+    "type": "event"
+  },
+  {
+    "constant": false,
+    "inputs": [
+      {
+        "name": "_beneficiary",
+        "type": "address"
+      }
+    ],
+    "name": "buyTokens",
+    "outputs": [],
+    "payable": true,
+    "stateMutability": "payable",
+    "type": "function"
+  },
+  {
+    "anonymous": false,
     "inputs": [],
-    "name": "hasClosed",
+    "name": "Finalized",
+    "type": "event"
+  },
+  {
+    "anonymous": false,
+    "inputs": [
+      {
+        "indexed": true,
+        "name": "previousOwner",
+        "type": "address"
+      },
+      {
+        "indexed": true,
+        "name": "newOwner",
+        "type": "address"
+      }
+    ],
+    "name": "OwnershipTransferred",
+    "type": "event"
+  },
+  {
+    "constant": false,
+    "inputs": [],
+    "name": "claimRefund",
+    "outputs": [],
+    "payable": false,
+    "stateMutability": "nonpayable",
+    "type": "function"
+  },
+  {
+    "constant": false,
+    "inputs": [],
+    "name": "End_crowd_sale",
     "outputs": [
       {
-        "name": "",
+        "name": "res",
         "type": "bool"
       }
     ],
     "payable": false,
-    "stateMutability": "view",
+    "stateMutability": "nonpayable",
     "type": "function"
+  },
+  {
+    "constant": false,
+    "inputs": [],
+    "name": "finalize",
+    "outputs": [],
+    "payable": false,
+    "stateMutability": "nonpayable",
+    "type": "function"
+  },
+  {
+    "constant": false,
+    "inputs": [
+      {
+        "name": "newOwner",
+        "type": "address"
+      }
+    ],
+    "name": "transferOwnership",
+    "outputs": [],
+    "payable": false,
+    "stateMutability": "nonpayable",
+    "type": "function"
+  },
+  {
+    "payable": true,
+    "stateMutability": "payable",
+    "type": "fallback"
+  },
+  {
+    "inputs": [
+      {
+        "name": "_crowdsale_length_minutes",
+        "type": "uint256"
+      },
+      {
+        "name": "_price_per_token",
+        "type": "uint256"
+      },
+      {
+        "name": "_wallet",
+        "type": "address"
+      },
+      {
+        "name": "_cap",
+        "type": "uint256"
+      },
+      {
+        "name": "_token",
+        "type": "address"
+      },
+      {
+        "name": "_goal",
+        "type": "uint256"
+      },
+      {
+        "name": "_token_goal",
+        "type": "uint256"
+      }
+    ],
+    "payable": false,
+    "stateMutability": "nonpayable",
+    "type": "constructor"
   },
   {
     "constant": true,
     "inputs": [],
-    "name": "rate",
+    "name": "cap",
     "outputs": [
       {
         "name": "",
@@ -32,10 +168,52 @@ JSON.parse(`[
   {
     "constant": true,
     "inputs": [],
-    "name": "cap",
+    "name": "capReached",
     "outputs": [
       {
         "name": "",
+        "type": "bool"
+      }
+    ],
+    "payable": false,
+    "stateMutability": "view",
+    "type": "function"
+  },
+  {
+    "constant": true,
+    "inputs": [],
+    "name": "closingTime",
+    "outputs": [
+      {
+        "name": "",
+        "type": "uint256"
+      }
+    ],
+    "payable": false,
+    "stateMutability": "view",
+    "type": "function"
+  },
+  {
+    "constant": true,
+    "inputs": [],
+    "name": "ethRaised",
+    "outputs": [
+      {
+        "name": "",
+        "type": "uint256"
+      }
+    ],
+    "payable": false,
+    "stateMutability": "view",
+    "type": "function"
+  },
+  {
+    "constant": true,
+    "inputs": [],
+    "name": "get_one_OwnerToken_id",
+    "outputs": [
+      {
+        "name": "_tokenID",
         "type": "uint256"
       }
     ],
@@ -60,30 +238,7 @@ JSON.parse(`[
   {
     "constant": true,
     "inputs": [],
-    "name": "closingTime",
-    "outputs": [
-      {
-        "name": "",
-        "type": "uint256"
-      }
-    ],
-    "payable": false,
-    "stateMutability": "view",
-    "type": "function"
-  },
-  {
-    "constant": false,
-    "inputs": [],
-    "name": "finalize",
-    "outputs": [],
-    "payable": false,
-    "stateMutability": "nonpayable",
-    "type": "function"
-  },
-  {
-    "constant": true,
-    "inputs": [],
-    "name": "capReached",
+    "name": "goalReached",
     "outputs": [
       {
         "name": "",
@@ -97,35 +252,7 @@ JSON.parse(`[
   {
     "constant": true,
     "inputs": [],
-    "name": "wallet",
-    "outputs": [
-      {
-        "name": "",
-        "type": "address"
-      }
-    ],
-    "payable": false,
-    "stateMutability": "view",
-    "type": "function"
-  },
-  {
-    "constant": true,
-    "inputs": [],
-    "name": "get_one_OwnerToken_id",
-    "outputs": [
-      {
-        "name": "_tokenID",
-        "type": "uint256"
-      }
-    ],
-    "payable": false,
-    "stateMutability": "view",
-    "type": "function"
-  },
-  {
-    "constant": true,
-    "inputs": [],
-    "name": "goalReached",
+    "name": "hasClosed",
     "outputs": [
       {
         "name": "",
@@ -153,43 +280,6 @@ JSON.parse(`[
   {
     "constant": true,
     "inputs": [],
-    "name": "owner",
-    "outputs": [
-      {
-        "name": "",
-        "type": "address"
-      }
-    ],
-    "payable": false,
-    "stateMutability": "view",
-    "type": "function"
-  },
-  {
-    "constant": false,
-    "inputs": [],
-    "name": "End_crowd_sale",
-    "outputs": [
-      {
-        "name": "res",
-        "type": "bool"
-      }
-    ],
-    "payable": false,
-    "stateMutability": "nonpayable",
-    "type": "function"
-  },
-  {
-    "constant": false,
-    "inputs": [],
-    "name": "claimRefund",
-    "outputs": [],
-    "payable": false,
-    "stateMutability": "nonpayable",
-    "type": "function"
-  },
-  {
-    "constant": true,
-    "inputs": [],
     "name": "openingTime",
     "outputs": [
       {
@@ -202,41 +292,27 @@ JSON.parse(`[
     "type": "function"
   },
   {
-    "constant": false,
-    "inputs": [
+    "constant": true,
+    "inputs": [],
+    "name": "owner",
+    "outputs": [
       {
-        "name": "_beneficiary",
+        "name": "",
         "type": "address"
       }
     ],
-    "name": "buyTokens",
-    "outputs": [],
-    "payable": true,
-    "stateMutability": "payable",
-    "type": "function"
-  },
-  {
-    "constant": false,
-    "inputs": [
-      {
-        "name": "newOwner",
-        "type": "address"
-      }
-    ],
-    "name": "transferOwnership",
-    "outputs": [],
     "payable": false,
-    "stateMutability": "nonpayable",
+    "stateMutability": "view",
     "type": "function"
   },
   {
     "constant": true,
     "inputs": [],
-    "name": "vault",
+    "name": "price_per_token",
     "outputs": [
       {
         "name": "",
-        "type": "address"
+        "type": "uint256"
       }
     ],
     "payable": false,
@@ -260,7 +336,7 @@ JSON.parse(`[
   {
     "constant": true,
     "inputs": [],
-    "name": "ethRaised",
+    "name": "token_goal",
     "outputs": [
       {
         "name": "",
@@ -272,90 +348,32 @@ JSON.parse(`[
     "type": "function"
   },
   {
-    "inputs": [
+    "constant": true,
+    "inputs": [],
+    "name": "vault",
+    "outputs": [
       {
-        "name": "_crowdsale_length_minutes",
-        "type": "uint256"
-      },
-      {
-        "name": "_rate",
-        "type": "uint256"
-      },
-      {
-        "name": "_wallet",
+        "name": "",
         "type": "address"
-      },
-      {
-        "name": "_cap",
-        "type": "uint256"
-      },
-      {
-        "name": "_token",
-        "type": "address"
-      },
-      {
-        "name": "_goal",
-        "type": "uint256"
       }
     ],
     "payable": false,
-    "stateMutability": "nonpayable",
-    "type": "constructor"
+    "stateMutability": "view",
+    "type": "function"
   },
   {
-    "payable": true,
-    "stateMutability": "payable",
-    "type": "fallback"
-  },
-  {
-    "anonymous": false,
+    "constant": true,
     "inputs": [],
-    "name": "Finalized",
-    "type": "event"
-  },
-  {
-    "anonymous": false,
-    "inputs": [
+    "name": "wallet",
+    "outputs": [
       {
-        "indexed": true,
-        "name": "previousOwner",
-        "type": "address"
-      },
-      {
-        "indexed": true,
-        "name": "newOwner",
+        "name": "",
         "type": "address"
       }
     ],
-    "name": "OwnershipTransferred",
-    "type": "event"
-  },
-  {
-    "anonymous": false,
-    "inputs": [
-      {
-        "indexed": true,
-        "name": "purchaser",
-        "type": "address"
-      },
-      {
-        "indexed": true,
-        "name": "beneficiary",
-        "type": "address"
-      },
-      {
-        "indexed": false,
-        "name": "value",
-        "type": "uint256"
-      },
-      {
-        "indexed": false,
-        "name": "amount",
-        "type": "uint256"
-      }
-    ],
-    "name": "TokenPurchase",
-    "type": "event"
+    "payable": false,
+    "stateMutability": "view",
+    "type": "function"
   }
 ]`
 )

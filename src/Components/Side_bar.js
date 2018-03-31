@@ -13,11 +13,27 @@ class Side_bar extends React.Component{
   constructor(props) {
     super(props);
     this.state={
+
     }
     this.buy_token = this.buy_token.bind(this)
     this.spend_token = this.spend_token.bind(this)
+    this.set_time_limit = this.set_time_limit.bind(this)
+
+    
+  }
+
+  set_time_limit(_time, sign){
+    const hour = 60;
+    const day = 1440;
+    const week = 10080;
+    const month = 43200;
+    const year = 15768000;
+    console.log(_time, sign)
+
 
   }
+
+
 
   buy_token(){
     console.log('buy token')
@@ -93,6 +109,7 @@ class Side_bar extends React.Component{
 
   render(){
     console.log(this.props)
+    console.log(this.state)
     return(
       <div className="side_bar">
         <div id="block-spinner"></div>
@@ -104,9 +121,77 @@ class Side_bar extends React.Component{
         <button onClick={this.buy_token}>Buy Token</button>
         {/*<button onClick="playSound('ka-ching_sound_effect');">Play</button>*/}
         <div id="sound"></div>
-
-        <p>Spend Cowdsale Token</p>
-        <button onClick={this.spend_token}>Create Your Crowdsale</button>
+        <div className='spend_cs_token_contaner'>
+          <p>Spend Cowdsale Token</p>
+          <div className="crowdsale_input">
+            <label htmlFor='crowdsale_name'>Crowdsale name</label>
+            <input
+            disabled
+              type="text"
+              name="crowdsale_name"
+              value={this.state.crowdsale_name}
+              onChange={(e)=>{this.setState({crowdsale_name:e.target.value})}}
+            />
+          </div>
+          <div className="crowdsale_input">
+            <label htmlFor='crowdsale_goal'>Crowdsale Goal (eth)</label>
+            <input
+              type="number"
+              name="crowdsale_goal"
+              value={this.state.crowdsale_goal}//TODO ADD IF WE WANT A CAP
+              onChange={(e)=>{this.setState({crowdsale_goal:e.target.value})}}
+            />
+          </div>
+          <div className="crowdsale_input">
+            <label htmlFor='price_per_token'>Price per Token (eth)</label>
+            <input
+            
+              type="text"
+              name="price_per_token"
+              value={this.state.price_per_token}
+              onChange={(e)=>{this.setState({price_per_token:e.target.value})}}
+            />
+          </div>
+          <div className="crowdsale_input">
+            <label htmlFor='token_goal'>Token Goal</label>
+            <input
+            disabled
+              type="text"
+              name="token_goal"
+              //value={this.state.token_goal}
+              value={this.state.crowdsale_goal / this.state.price_per_token}
+              onChange={(e)=>{this.setState({token_goal:e.target.value})}}
+            />
+          </div>
+          <div className="crowdsale_input">
+            <label htmlFor='crowdsale_time_limit'>Crowdsale Timelimit (min)</label>
+            <input
+              type="number"
+              name="crowdsale_time_limit"
+              value={this.state.crowdsale_time_limit}
+              onChange={(e)=>{this.setState({crowdsale_time_limit:e.target.value})}}
+            />
+            <br/>
+            <button className="set_time_btn minus" onClick={(e)=>{this.set_time_limit('hour', '-')}}>-</button>1 hour<button className="set_time_btn plus" onClick={(e)=>{this.set_time_limit('hour', '+')}}>+</button>
+            <button className="set_time_btn minus" onClick={(e)=>{this.set_time_limit('day', '-')}}>-</button>1 day<button className="set_time_btn plus" onClick={(e)=>{this.set_time_limit('day', '+')}}>+</button>
+            <button className="set_time_btn minus" onClick={(e)=>{this.set_time_limit('week', '-')}}>-</button>1 week<button className="set_time_btn plus" onClick={(e)=>{this.set_time_limit('week', '+')}}>+</button>
+            <button className="set_time_btn minus" onClick={(e)=>{this.set_time_limit('month', '-')}}>-</button>1 month<button className="set_time_btn plus" onClick={(e)=>{this.set_time_limit('month', '+')}}>+</button>
+            <button className="set_time_btn minus" onClick={(e)=>{this.set_time_limit('year', '-')}}>-</button>1 year<button className="set_time_btn plus" onClick={(e)=>{this.set_time_limit('year', '+')}}>+</button>
+          </div>
+          
+ 
+          <div className="crowdsale_input">
+            <label htmlFor='crowdsale_wallet'>Crowdsale Wallet (address)</label>
+            <input
+            disabled
+              type="text"
+              name="crowdsale_wallet"
+              value={this.props.address}
+              onChange={(e)=>{this.setState({crowdsale_wallet:e.target.value})}}
+            />
+          </div>
+          <button onClick={this.spend_token}>Create Your Crowdsale</button>
+        </div>
       </div>
     )
   }

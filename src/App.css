@@ -131,6 +131,39 @@ table{
   border-right: 1px solid black;
  }
 
+ label{
+  text-decoration: underline;
+  margin:1em;
+ }
+
+ .crowdsale_input{
+
+ }
+
+ input{
+  width: 300px;
+ }
+
+ input:disabled{
+  background: rgb(111, 111, 111);
+  color:pink;
+ }
+
+ .set_time_btn{
+  /*padding: 1em;*/
+  /*margin: 1em;*/
+
+ }
+
+ .minus{
+  background: indianred;
+  margin-left: 1em; 
+ }
+ .plus{
+  background: green;
+ }
+
+
 .user_events_grid *{
   color:red;
 }
