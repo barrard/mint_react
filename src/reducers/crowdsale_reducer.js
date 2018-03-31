@@ -2,7 +2,7 @@ import store from '../store';
 
 
 export default function reducer(state={
-  _crowdsale_counter:0, crowdsales_obj:{}
+  _crowdsale_counter:0, crowdsales_obj:{}, getAllCrowdsaleObjsdata:false
 }, action) {
   switch(action.type){
 
@@ -29,11 +29,17 @@ export default function reducer(state={
               }
       }
     }
+    
 
-    case "ERC721MintableToken__CROWDSALE_COUNTER":{
-      const count = action._crowdsale_counter.toNumber()
-      return {...state, _crowdsale_counter:count}
-    }
+   case "HAS_GOT_ALL_CROWDSALES":{
+     // const count = action._crowdsale_counter.toNumber()
+     return {...state, getAllCrowdsaleObjsdata:action.flag}
+   }
+
+   case "ERC721MintableToken__CROWDSALE_COUNTER":{
+     const count = action._crowdsale_counter.toNumber()
+     return {...state, _crowdsale_counter:count}
+   }
 
     case "CROWDSALE_DATA_OBJ":{
       console.log(action.crowdsale_obj)

@@ -19,7 +19,7 @@ import store from './store';
 // store.dispatch({type:"TEST_TOKEN", payload:'KA_CHING'})
 // store.dispatch({type:"TEST_CROWDSALE", payload:'Sold!'})
 
-console.log(store.getState())
+// console.log(store.getState())
 
 
 ReactDOM.render(
@@ -29,5 +29,5 @@ ReactDOM.render(
     , document.getElementById('root'));
 registerServiceWorker();
 
-console.log(store.getState())
+// console.log(store.getState())
 

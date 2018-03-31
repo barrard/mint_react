@@ -12,7 +12,16 @@ export default function reducer(state={
   Prop_token_minted_events_array:[],
   Crowdsale_initiated_events_count:0, 
   Crowdsale_initiated_events_array:[],
+  Seed_Tokes_Minted_count:0, 
+  Seed_Tokes_Minted_events_array:[],
   get_my_tokens:[],
+  data_fetching:{
+    Transfer:false,
+    Approval:false,
+    Seed_Tokes_Minted:false,
+    Prop_token_minted:false,
+    Crowdsale_initiated:false,
+  },
 
 
   // ERC721MintableToken_address:"0x769387d444ff8a4059983186deadcd1ab8e99390",
@@ -22,12 +31,37 @@ export default function reducer(state={
 }, action) {
   switch(action.type){
 
+    case "RESET_FLAG_data_fetching":{
+      const event = action.event
+
+      return{...state,
+        data_fetching:{
+          ...state.data_fetching,
+          [event]:false
+        }
+      }
+    }
+
+    case "SET_FLAG_data_fetching":{
+      const event = action.event
+
+      return{...state,
+        data_fetching:{
+          ...state.data_fetching,
+          [event]:true
+        }
+      }
+    }
+
 
     case "Transfer":{
       console.log(action.event)
-      const count = state.Transfer_events_count++
+      // console.log(state.Transfer_events_count)
+      // console.log(state.Transfer_events_count++)
+      const count = state.Transfer_events_count+1
       const event_array = state.Transfer_events_array.slice()
       event_array.push(action.event)
+      // console.log(count)
       return {...state, 
         latest_Transfer_event:action.event,
         Transfer_events_array:event_array,
@@ -37,9 +71,10 @@ export default function reducer(state={
     
     case "Approval":{
       console.log(action.event)
-      const count = state.Approval_events_count++
+      const count = state.Approval_events_count+1
       const event_array = state.Approval_events_array.slice()
       event_array.push(action.event)
+      // console.log(count)
       return {...state, 
         latest_Approval_event:action.event,
         Approval_events_array:event_array,
@@ -47,16 +82,23 @@ export default function reducer(state={
       }
     }
     
-    // case "Seed_Tokes_Minted":{
-    //   console.log(action.event)
-    //   return {...state, new_Seed_Tokes_Minted:action.event}
-    // }
+    case "Seed_Tokes_Minted":{
+      console.log(action.event)
+      const count = state.Seed_Tokes_Minted_count+1
+      const event_array = state.Seed_Tokes_Minted_events_array.slice()
+      event_array.push(action.event)
+      return {...state, 
+        latest_Crowdsale_initiated_event:action.event,
+        Seed_Tokes_Minted_events_array:event_array,
+        Seed_Tokes_Minted_count:count
+      }
+    }
     
     case "Crowdsale_initiated":{
       const token_id = action.event.args._tokenId.toNumber()
-      toastr.info(`Token ${token_id} spent`)
+      // toastr.info(`Token ${token_id} spent`)
       console.log(action.event)
-      const count = state.Crowdsale_initiated_events_count++
+      const count = state.Crowdsale_initiated_events_count+1
       const event_array = state.Crowdsale_initiated_events_array.slice()
       event_array.push(action.event)
       return {...state, 
@@ -70,7 +112,7 @@ export default function reducer(state={
     case "Prop_token_minted":{
       console.log(action.event)
       const _bal = parseInt(state.ERC721MintableToken_balance) + 1
-      const count = state.Prop_token_minted_events_count++
+      const count = state.Prop_token_minted_events_count+1
       const event_array = state.Prop_token_minted_events_array.slice()
       const my_tokens = state.get_my_tokens;
       if(action.event.args)
@@ -84,6 +126,55 @@ export default function reducer(state={
     }
 
 
+    case "CLEAR_Transfer":{
+      console.log(action.event)
+      const count = 0
+      const event_array = [] 
+      return {...state, 
+        Transfer_events_array:event_array,
+        Transfer_events_count:count
+      }
+    }
+    
+    case "CLEAR_Approval":{
+      const count = 0
+      const event_array = [] 
+      return {...state, 
+        Approval_events_array:event_array,
+        Approval_events_count:count
+      }
+    }
+    
+    case "CLEAR_Seed_Tokes_Minted":{
+      const count = 0
+      const event_array = [] 
+      return {...state, 
+        Seed_Tokes_Minted_events_array:event_array,
+        Seed_Tokes_Minted_count:count
+      }
+    }
+    
+    case "CLEAR_Crowdsale_initiated":{
+      const count = 0
+      const event_array = [] 
+      return {...state, 
+        Crowdsale_initiated_events_array:event_array,
+        Crowdsale_initiated_events_count:count
+      }
+    }
+    
+
+    case "CLEAR_Prop_token_minted":{
+      console.log(action.event)
+      const count = 0
+      const event_array = [] 
+      return {...state, 
+        Prop_token_minted_events_array:event_array,
+        Prop_token_minted_events_count:count,
+      }
+    }
+
+
 
     case "ERC721MintableToken__CROWDSALE_COUNTER":{
       return {...state, _crowdsale_counter:action._crowdsale_counter.toNumber()}
@@ -93,6 +184,8 @@ export default function reducer(state={
     }
 
     case "ERC721MintableToken_TOTALSUPPLY":{
+      console.log('Totl supply')
+      console.log(action)
       return {...state, totalSupply:action.totalSupply.toNumber()}
     }
 

@@ -43,8 +43,8 @@ class App extends Component {
         />
 
         <Route exact path='/' component={Side_bar} />
-        <Route exact path='/User_stats' component={User_stats} />
-        <Route exact path='/Crowdsale_list' component={Crowdsale_list} />
+        <Route  path='/User_stats' component={User_stats} />
+        <Route  path='/Crowdsale_list' component={Crowdsale_list} />
 
       </div>
       </Router>

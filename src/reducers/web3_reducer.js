@@ -1,3 +1,6 @@
+import toastr from 'toastr'
+
+
 const web3 = window.web3
 
 export default function reducer(state={
@@ -5,6 +8,11 @@ export default function reducer(state={
 
 }, action) {
   switch(action.type){
+
+    case "UI_ERR":{
+      toastr.error(action.e)
+      return{...state}
+    }
 
     case "USER_BALANCE":{
       return {...state, balance:(action.balance)}

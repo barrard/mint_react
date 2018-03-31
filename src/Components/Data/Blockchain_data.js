@@ -10,12 +10,12 @@ import toastr from 'toastr'
 
 const web3 = window.web3
 var ERC721MintableToken_contract;
-const block_hash = [];
 
 class Blockchain_data extends React.Component{
 
   constructor(props){
     super(props);
+    if(!web3)return
     // console.log('block chain construcotr')
     // console.log(ERC721MintableToken_abi)
     // console.log(ERC721Crowdsale_abi)
@@ -35,6 +35,8 @@ class Blockchain_data extends React.Component{
   }
 
    get_data(){
+    if(!web3) {toastr.error('No Web3 found'); return;}
+
     console.log(this.props);
     this.get_balance();
     this.get_ERC721MintableToken_balance();
@@ -148,7 +150,7 @@ class Blockchain_data extends React.Component{
            console.log('error')
            console.log(e)
          }else if (r){
-          if(!this.check_block(r)){
+          if(!utils.check_block(r)){
             console.log('blocking duplicate')
             return
           }
@@ -167,33 +169,12 @@ class Blockchain_data extends React.Component{
 
   }
 
-  check_block(_blockHash){
-    console.log(_blockHash.blockNumber)
-    if( this.get_stored_block_hash().indexOf(_blockHash.blockNumber) === -1){
-      this.add_blockhash_to_stored(_blockHash.blockNumber)
-      console.log('new blockhash')
-      console.log(_blockHash.blockNumber)
 
-      return true
-    }else{
-      console.log('already have')
-      // console.log(_blockHash)
-
-      // return false
-      return true
-    }
-  }
-  get_stored_block_hash(){
-    return block_hash;
-  }
-  add_blockhash_to_stored(_blockHash){
-    block_hash.push(_blockHash)
-  }
   get_balanceOf_crowdsale(_acct){
     ERC721MintableToken_contract.balanceOf(_acct, (e, r)=>{
       if(e){
         this.props.dispatch({
-          type:'ERROR', error:e
+          type:'UI_ERR', e:e
         })
         console.log(e)
         return
@@ -206,9 +187,11 @@ class Blockchain_data extends React.Component{
     })
   }
   getAllCrowdsaleObjsdata(){
+    if(this.props.has_got_all_crowdsales) return
     ERC721MintableToken_contract._crowdsale_counter((e, r)=>{
       const count = r
       console.log('CROWDSALE COUNT LETS GET tHIS mANY '+count)
+      this.props.dispatch({type:'HAS_GOT_ALL_CROWDSALES', flag:true})
       console.log('does i have '+this.props.crowdsale_count)
       for ( let x = 0 ; x < count ; x++){
         ERC721MintableToken_contract.get_property_by_id(x, (e, r)=>{
@@ -266,7 +249,8 @@ const mapStateToProps = (state)=>{
   return{
     web3:state.web3,
     token_address:state.tokens.ERC721MintableToken_address,
-    crowdsale_count:state.crowdsale._crowdsale_counter
+    crowdsale_count:state.crowdsale._crowdsale_counter,
+    has_got_all_crowdsales:state.crowdsale.getAllCrowdsaleObjsdata
   }
 }
 

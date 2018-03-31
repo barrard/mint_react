@@ -13,10 +13,10 @@ class Navigation extends React.Component{
   render(){
     return(
       <nav>
-        <Link to=""               className="nav-item">Home</Link>
-        <Link to="User_stats"     className="nav-item">User Stats</Link>  
-        <Link to="Crowdsale_list" className="nav-item">Crowdsale List</Link>  
-        <Link to="Footer"         className="nav-item">Footer</Link>  
+        <Link to="/"               className="nav-item">Home</Link>
+        <Link to="/User_stats"     className="nav-item">User Stats</Link>  
+        <Link to="/Crowdsale_list" className="nav-item">Crowdsale List</Link>  
+        <Link to="/Footer"         className="nav-item">Footer</Link>  
       </nav>
 
     )
