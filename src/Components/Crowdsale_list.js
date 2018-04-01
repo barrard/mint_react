@@ -15,7 +15,7 @@ class Crowdsale_list extends React.Component{
 
   mint(_val, _acct){
     console.log(`mint ${_val} tokens for ${_acct}`)
-    this.props.tokens.contract_obj.mint_token_lot(_val, _acct, _acct, (e, r)=>{
+    this.props.tokens.token_contract.mint_token_lot(_val, _acct, _acct, (e, r)=>{
       console.log(e)
       console.log(r)
     })
@@ -97,8 +97,8 @@ const List_property_element = (props)=>{
         >Mint 50
       </button>
       <button 
-        onClick={()=>{props.mintBtn(75, props.account)}}
-        >Mint 75
+        onClick={()=>{props.mintBtn(1, props.account)}}
+        >Mint 1
       </button>
       <span>Balance= {props.balance}</span>
   </div>

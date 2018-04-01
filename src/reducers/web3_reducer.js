@@ -4,7 +4,10 @@ import toastr from 'toastr'
 const web3 = window.web3
 
 export default function reducer(state={
-  address:'',balance:'', tokens:[], 
+  address:'',balance:'', tokens:[],
+  ETH_DATA:{
+    peice:400
+  },
 
 }, action) {
   switch(action.type){
@@ -26,6 +29,11 @@ export default function reducer(state={
     }
     case "web3/CHANGE_ACCOUNT":{
       return {...state, address:action.address}
+    }
+
+    case 'CURRENT_ETH_PRICE':{
+      return {...state, ETH_DATA:action.data}
+
     }
 
 

@@ -141,7 +141,7 @@ table{
  }
 
  input{
-  width: 300px;
+  width: 350px;
  }
 
  input:disabled{
@@ -155,12 +155,27 @@ table{
 
  }
 
+.short_input{
+  width: 5em;
+}
  .minus{
   background: indianred;
   margin-left: 1em; 
  }
+ .text_time{
+  margin-left: 1em;
+ }
+
+ .text_time_limit{
+  margin-left: 1em;
+ }
+
  .plus{
   background: green;
+ }
+
+ .inline{
+  display: inline;
  }
 
 

@@ -44,12 +44,6 @@ JSON.parse(`[
   },
   {
     "anonymous": false,
-    "inputs": [],
-    "name": "Finalized",
-    "type": "event"
-  },
-  {
-    "anonymous": false,
     "inputs": [
       {
         "indexed": true,
@@ -63,6 +57,12 @@ JSON.parse(`[
       }
     ],
     "name": "OwnershipTransferred",
+    "type": "event"
+  },
+  {
+    "anonymous": false,
+    "inputs": [],
+    "name": "Finalized",
     "type": "event"
   },
   {
@@ -101,6 +101,34 @@ JSON.parse(`[
     "constant": false,
     "inputs": [
       {
+        "name": "_new_description",
+        "type": "string"
+      }
+    ],
+    "name": "set_crowdsale_description",
+    "outputs": [],
+    "payable": false,
+    "stateMutability": "nonpayable",
+    "type": "function"
+  },
+  {
+    "constant": false,
+    "inputs": [
+      {
+        "name": "_new_name",
+        "type": "string"
+      }
+    ],
+    "name": "set_crowdsale_name",
+    "outputs": [],
+    "payable": false,
+    "stateMutability": "nonpayable",
+    "type": "function"
+  },
+  {
+    "constant": false,
+    "inputs": [
+      {
         "name": "newOwner",
         "type": "address"
       }
@@ -118,6 +146,10 @@ JSON.parse(`[
   },
   {
     "inputs": [
+      {
+        "name": "_name",
+        "type": "string"
+      },
       {
         "name": "_crowdsale_length_minutes",
         "type": "uint256"
@@ -187,6 +219,20 @@ JSON.parse(`[
       {
         "name": "",
         "type": "uint256"
+      }
+    ],
+    "payable": false,
+    "stateMutability": "view",
+    "type": "function"
+  },
+  {
+    "constant": true,
+    "inputs": [],
+    "name": "description",
+    "outputs": [
+      {
+        "name": "",
+        "type": "string"
       }
     ],
     "payable": false,
@@ -271,6 +317,20 @@ JSON.parse(`[
       {
         "name": "",
         "type": "bool"
+      }
+    ],
+    "payable": false,
+    "stateMutability": "view",
+    "type": "function"
+  },
+  {
+    "constant": true,
+    "inputs": [],
+    "name": "name",
+    "outputs": [
+      {
+        "name": "",
+        "type": "string"
       }
     ],
     "payable": false,

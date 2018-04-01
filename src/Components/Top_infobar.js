@@ -58,7 +58,7 @@ class Top_infobar extends React.Component{
         <div>Top bar</div>
         <p>ERC721MintableToken Address:{this.props.token_address}</p>
           <div>Your tokens {coins}</div>
-        <p>Your Address:{this.props.web3.address}</p>
+        <p>Your Address:{this.props.address}</p>
         <p>ERC721MintableToken Balance:{this.props.tokens_balance}</p>
         <p>{this.props.crowdsales} Crowdsales already started</p>
       </div>
@@ -81,7 +81,7 @@ const Coin = (props)=>{
 
 const mapStateToProps = (state)=>{
     return{
-      web3:state.web3,
+      address:state.web3.address,
       tokens_balance:state.tokens.ERC721MintableToken_balance,
       token_address:state.tokens.ERC721MintableToken_address,
       my_tokens:state.tokens.get_my_tokens,

@@ -266,6 +266,10 @@ JSON.parse(`
       "constant": false,
       "inputs": [
         {
+          "name": "_name",
+          "type": "string"
+        },
+        {
           "name": "_time_limit",
           "type": "uint256"
         },

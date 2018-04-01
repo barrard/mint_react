@@ -24,9 +24,10 @@ export default function reducer(state={
   },
 
 
-  ERC721MintableToken_address:"0x3d3Dd4E13674cC2c59E8684d6d818510cCEdc6cB",//Rinkeby
+  ERC721MintableToken_address:"0x5FcD2d7DFe5949b338251Bfc658DD7cfCf2f5c4c",//Rinkeby
+  // ERC721MintableToken_address:"0x3d3Dd4E13674cC2c59E8684d6d818510cCEdc6cB",//OldRinkeby
   // ERC721MintableToken_address:"0xd008982422687e2e005dd931bcefac532e48201d",//OldRinkeby
-  contract_obj:'', owner:'', prop_token_counter:'', _crowdsale_counter:'', crowdsaleObj:{}
+  token_contract:'', owner:'', prop_token_counter:'', _crowdsale_counter:'', crowdsaleObj:{}
 
 }, action) {
   switch(action.type){
@@ -180,7 +181,7 @@ export default function reducer(state={
       return {...state, _crowdsale_counter:action._crowdsale_counter.toNumber()}
     }
     case "ERC721MintableToken_CONTRACT_OBJ":{
-      return {...state, contract_obj:action.token_obj}
+      return {...state, token_contract:action.token_obj}
     }
 
     case "ERC721MintableToken_TOTALSUPPLY":{

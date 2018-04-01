@@ -14,6 +14,8 @@ class User_stats extends React.Component{
   constructor(props) {
     super(props);
     this.state={
+      owner_of_token:'',
+      get_owner_of_token_input:'0',
       Transfer_filter_inputs:{},
       Approval_filter_inputs:{},
       Seed_Tokes_Minted_filter_inputs:{},
@@ -31,6 +33,7 @@ class User_stats extends React.Component{
     this.set_event_filters = this.set_event_filters.bind(this)
     this.get_events_for = this.get_events_for.bind(this)
     this.handle_filter_input = this.handle_filter_input.bind(this)
+    this.get_owner_of_token_input = this.get_owner_of_token_input.bind(this)
 
   }
   set_event_filters(e){
@@ -69,7 +72,7 @@ class User_stats extends React.Component{
       type:'CLEAR_'+event,
       event:event
     })
-    const ERC721MintableToken_contract = this.props.token.contract_obj
+    const ERC721MintableToken_contract = this.props.token.token_contract
      // console.log(this.props.address)
      console.log(event)
      console.log(ERC721MintableToken_contract[event])
@@ -82,7 +85,7 @@ class User_stats extends React.Component{
      event_event.watch((e, r)=>{
        console.log(event+'_event');
        if(e){
-        //TODO log errors
+        this.props.dispatch({type:"UI_ERR", e:e})
          console.log('error')
          console.log(e)
        }else if (r){
@@ -118,6 +121,28 @@ class User_stats extends React.Component{
     })
   }
 
+  get_owner_of(_id){
+    console.log(`get address of ${_id}`)
+    this.props.token.token_contract.ownerOf(_id, (e, r)=>{
+      if(e){
+        this.props.dispatch({type:"UI_ERR", e:e})
+      }else{
+        console.log(r)
+        this.setState({
+          owner_of_token:r
+        })
+      }
+    })
+
+  }
+  get_owner_of_token_input(e){
+    console.log('token owner of who whaaa')
+    const id = e.target.value;
+    this.setState({
+      get_owner_of_token_input:id
+    })
+  }
+
   render(){
     // console.log(this.props.location.pathname.split('/').length)
     console.log(this.state)   // hack to avoid not having an event selected
@@ -146,6 +171,19 @@ class User_stats extends React.Component{
         <div className="">
           <span> Account: {this.props.address}</span> <br/>
            <span> Balance: {this.props.balance}</span> 
+        </div>
+        <div className="get_token_owner">
+          Token <input
+          className="short_input"
+            type="text"
+            name="token_id"
+            value={this.state.get_owner_of_token_input}
+            onChange={this.get_owner_of_token_input}
+          />
+          <button
+            onClick={(e)=>{this.get_owner_of(this.state.get_owner_of_token_input)}}
+          >Get Owner of Token:{this.state.get_owner_of_token_input}</button>    
+          <span> - {this.state.owner_of_token}</span>
         </div>
         <div className="user_events_grid">
           <div className="user_events_column">
