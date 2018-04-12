@@ -45,11 +45,22 @@ class Blockchain_data extends React.Component{
     console.log(this.props);
     this.get_balance();
     this.get_ERC721MintableToken_balance();
+    // this.testing('prop_token_counter');
     this.get_data_array();
     this.setTokenWatchers();
     this.getAllCrowdsaleObjsdata();
     // this.init_wss_data()
 
+  }
+
+  testing(k){
+    console.log('Testing works')
+    console.log(ERC721MintableToken_contract)
+    ERC721MintableToken_contract[k]((e, r)=>{
+      console.log('is results?????')
+      console.log(e)
+      console.log(r)
+    })
   }
 
   init_wss_data(){
@@ -138,11 +149,9 @@ class Blockchain_data extends React.Component{
   make_crowdsale_contract(_address){
     const ERC721Crowdsale = web3.eth.contract(ERC721Crowdsale_abi)
     const ERC721Crowdsale_contract = ERC721Crowdsale.at(_address)
+    return ERC721Crowdsale_contract;
 
-    this.props.dispatch({
-      type:"CROWDSALE_CONTRACT_OBJ", 
-      crodsale_obj:ERC721Crowdsale_contract, 
-      crowdsale_address:_address})
+
 
   }
 
@@ -153,24 +162,20 @@ class Blockchain_data extends React.Component{
       'totalSupply',
       'get_my_tokens',
       'get_wei_balance', //getting balance of adderss instead
-      "prop_token_counter", 
+      "CS_token_counter", 
       "_crowdsale_counter"
       ];
     data_array.forEach((v)=>{
+      console.log(v)
       ERC721MintableToken_contract[v]((e, r)=>{
         if(e){
+          this.props.dispatch({type:"UI_ERR", e:e})
           console.log(v+':'+e)
         } else{
-          // if(i==="owner" || i === "get_wei_balance"){
-          //   var owner_item = App.make_owner_item()
-          //   $(sidebar_el).append(owner_item)
-          // }
+
           console.log(v+':'+r)
           const type = v.toUpperCase()
           this.props.dispatch({type:`ERC721MintableToken_${type}`,[v]:r})
-
-          // App.data[i]=r
-          // $(sidebar_el).append(`<div>${i}: ${r}</div>`)
           utils.call_when_done(data_array, iteratore_counter, this.setTokenWatchers())
         }
       })
@@ -179,7 +184,7 @@ class Blockchain_data extends React.Component{
 
   get_ERC721MintableToken_balance(){
     web3.eth.getBalance(this.props.token_address,(e, r)=>{
-      if(e){console.log(e)}
+      if(e){console.log(e);this.props.dispatch({type:"UI_ERR", e:e})}
         const balance = r.toNumber()
         // toastr.info(`Balance: ${balance}`)
         this.props.dispatch({type:"ERC721MintableToken_BALANCE", balance:balance})
@@ -225,7 +230,7 @@ class Blockchain_data extends React.Component{
        ,'Approval'
        ,'Seed_Tokes_Minted'
        ,'Crowdsale_initiated'
-       ,'Prop_token_minted'
+       ,'CS_token_minted'
      ]
      console.log(this.props.web3.address)
      token_events_array.forEach((event)=>{
@@ -281,21 +286,87 @@ class Blockchain_data extends React.Component{
       this.props.dispatch({type:'HAS_GOT_ALL_CROWDSALES', flag:true})
       console.log('does i have '+this.props.crowdsale_count)
       for ( let x = 0 ; x < count ; x++){
-        ERC721MintableToken_contract.get_property_by_id(x, (e, r)=>{
+        ERC721MintableToken_contract.get_crowdsale_by_id(x, (e, r)=>{
           if (e) {
+            this.props.dispatch({type:"UI_ERR", e:e})
             console.log(e)
             return
           }else{
+        //string _name;
+        // uint _cap;
+        // uint _token_goal;
+        // uint _goal;
+        // uint _price_per_token;
+        // uint _time_limit;
+        // uint _id;
+        // address _address;
+        // bool _visible;
+        // string[] _pics;
+        // address _wallet_raising_funds;
+        // uint _token_id;
             console.log(r)
-            const count = r[0].toNumber()
-            const account = r[1];
-            const visible = r[2];
-            const wallet_account = r[3];
-            this.props.dispatch({
-              type:'CROWDSALE_DATA_OBJ',
-              crowdsale_obj:{count, account, visible, wallet_account}
+            const cs_data = [
+              '_name','_cap','_token_goal','_goal','_price_per_token',
+              '_time_limit','_id','_address','_visible',
+              '_wallet_raising_funds','_token_id'
+            ]
+            var compiled_data ={}
+            cs_data.forEach((key, count)=>{
+              compiled_data[key]=r[count]
             })
-            this.get_balanceOf_crowdsale(account)
+            console.log(compiled_data)
+            const name = compiled_data._name;
+            const cap = compiled_data._cap.toNumber();
+            const token_goal = compiled_data._token_goal.toNumber();
+            const goal = compiled_data._goal.toNumber();
+            const price_per_token = compiled_data._price_per_token.toNumber();
+            const time_limit = compiled_data._time_limit.toNumber();
+            const id = compiled_data._id.toNumber();
+            const token_id = compiled_data._token_id.toNumber();
+            const visible = compiled_data._visible;
+            const wallet_account = compiled_data._wallet_raising_funds
+            const account = compiled_data._address
+            const cs_contract = this.make_crowdsale_contract(account);
+            var hasClosed;
+            var vault_address;
+            var isFinalized;
+
+            cs_contract.hasClosed((e, r)=>{
+              if(r) hasClosed=r
+                cs_contract.vault((e, r)=>{
+                  if(r) vault_address=r
+                    cs_contract.isFinalized((e, r)=>{
+                      if(r) isFinalized=r
+                        this.props.dispatch({
+                          type:'CROWDSALE_DATA_OBJ',
+                          crowdsale_obj:{
+                            name,
+                            cap,
+                            token_goal,
+                            goal,
+                            price_per_token,
+                            time_limit,
+                            id,
+                            token_id,
+                            visible,
+                            wallet_account,
+                            account,
+                            cs_contract,
+                            hasClosed,
+                            vault_address,
+                            isFinalized}
+                        })
+
+                    })
+
+                })
+
+
+            })
+
+
+
+            this.get_balanceOf_crowdsale(compiled_data['_address'])
           }
         })
       }

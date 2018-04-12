@@ -79,29 +79,35 @@ class User_stats extends React.Component{
      const filter_data = this.state[event+'_filter_inputs']
      const filter_obj = this.set_for_filter_obj(filter_data)
      console.log(filter_obj)
-     let event_event = ERC721MintableToken_contract[event](
-       // {_to:this.props.web3.address}, {fromBlock:0, toBlock:'latest'})
-       filter_obj, {fromBlock:0, toBlock:'latest'})
-     event_event.watch((e, r)=>{
-       console.log(event+'_event');
-       if(e){
-        this.props.dispatch({type:"UI_ERR", e:e})
-         console.log('error')
-         console.log(e)
-       }else if (r){
-        if(!utils.check_block(r)){
-          console.log('blocking duplicate')
-          return
+     try{
+      let event_event = ERC721MintableToken_contract[event](
+        // {_to:this.props.web3.address}, {fromBlock:0, toBlock:'latest'})
+        filter_obj, {fromBlock:0, toBlock:'latest'})
+      event_event.watch((e, r)=>{
+        console.log(event+'_event');
+        if(e){
+         this.props.dispatch({type:"UI_ERR", e:e})
+          console.log('error')
+          console.log(e)
+        }else if (r){
+         if(!utils.check_block(r)){
+           console.log('blocking duplicate')
+           return
+         }
+         //TODO log reulst
+          console.log(r)
+          //emiting events to store, do listeners(reducers) exist
+          this.props.dispatch({
+           type:event,
+           event:r
+          })
         }
-        //TODO log reulst
-         console.log(r)
-         //emiting events to store, do listeners(reducers) exist
-         this.props.dispatch({
-          type:event,
-          event:r
-         })
-       }
-     })       
+      })  
+    }catch(e){
+      this.props.dispatch({type:"UI_ERR", e:"Check your MetaMask"})
+
+    }
+     
   }
 
   handle_filter_input(val, event, filter){
@@ -123,16 +129,21 @@ class User_stats extends React.Component{
 
   get_owner_of(_id){
     console.log(`get address of ${_id}`)
-    this.props.token.token_contract.ownerOf(_id, (e, r)=>{
-      if(e){
-        this.props.dispatch({type:"UI_ERR", e:e})
-      }else{
-        console.log(r)
-        this.setState({
-          owner_of_token:r
-        })
-      }
-    })
+    try{
+      this.props.token.token_contract.ownerOf(_id, (e, r)=>{
+        if(e){
+          this.props.dispatch({type:"UI_ERR", e:e})
+        }else{
+          console.log(r)
+          this.setState({
+            owner_of_token:r
+          })
+        }
+      })
+    }catch(e){
+      this.props.dispatch({type:"UI_ERR", e:"Check your MetaMask connection"})
+
+    }
 
   }
   get_owner_of_token_input(e){
@@ -304,7 +315,7 @@ const Filter = (props)=>{
           return props.value[filter+'_input']
         }
       }
-      const el = <Filter_inputs 
+      const el = <FilterInputs 
                     onChange={props.onChange}
                     key={filters.length} 
                     filter={filter}
@@ -326,7 +337,7 @@ const mapStateToProps = (state)=>{
   }
 export default connect(mapStateToProps)(User_stats)
 
-function Filter_inputs(props){
+function FilterInputs(props){
   return ( 
     <div>
       {props.filter} <input value={props.value} onChange={(e)=>{props.onChange(e.target.value, props.event, props.filter)}} type="text"/>

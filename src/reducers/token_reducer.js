@@ -24,7 +24,7 @@ export default function reducer(state={
   },
 
 
-  ERC721MintableToken_address:"0x5FcD2d7DFe5949b338251Bfc658DD7cfCf2f5c4c",//Rinkeby
+  ERC721MintableToken_address:"0x9b8b0f1c92337e6e7adfb7fa228f9938eb276bca",//Rinkeby
   // ERC721MintableToken_address:"0x3d3Dd4E13674cC2c59E8684d6d818510cCEdc6cB",//OldRinkeby
   // ERC721MintableToken_address:"0xd008982422687e2e005dd931bcefac532e48201d",//OldRinkeby
   token_contract:'', owner:'', prop_token_counter:'', _crowdsale_counter:'', crowdsaleObj:{}
@@ -200,9 +200,10 @@ export default function reducer(state={
     }
 
     case "ERC721MintableToken_PROP_TOKEN_COUNTER":{
-      console.log('CALL UTILITY FUNCTION HERE')
-      var crowdsaleObj:{}
+      console.log('PROP_TOKEN_COUNTER')
       const count = action.prop_token_counter.toNumber()
+      console.log(count)
+      var crowdsaleObj:{}
       return {...state, prop_token_counter:count}
     }
     case "ERC721MintableToken_GET_MY_TOKENS":{

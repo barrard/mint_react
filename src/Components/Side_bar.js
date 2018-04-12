@@ -1,7 +1,6 @@
 import React from 'react';
 import {connect} from 'react-redux';
 import toastr from 'toastr'
-// import web3 from 'web3'
 import utils from './utils/utils'
 import kaChing_m4a from './sounds/ka-ching_sound_effect.m4a'
 import crowd_cheer_sound from './sounds/small_crowd_cheering_and_clapping.wav.mp3'
@@ -32,70 +31,36 @@ class Side_bar extends React.Component{
     this.spend_token = this.spend_token.bind(this)
     this.set_time_limit = this.set_time_limit.bind(this)
     this.set_price_per_token = this.set_price_per_token.bind(this)
+    this.token_price_input = this.token_price_input.bind(this)
+    this.price_per_token = this.price_per_token.bind(this)
 
     
   }
 
+  token_price_input(ether_unit, val){
+    val = parseInt(val)
+
+    this.setState({
+      [ether_unit]:val
+    })
+
+  }
+
   set_price_per_token(_ether_unit, _sign){
-    console.log(this.state)
-    const ether = web3.fromWei("1000000000000000000", 'ether')
-    const finney = web3.toWei("1", 'finney')
-    const microether = web3.toWei("1", 'microether')
-    const picoether = web3.toWei("1", 'picoether')
-
-    const finney_ether = web3.fromWei(finney, 'ether')
-    const microether_ether = web3.fromWei(microether, 'ether')
-    const picoether_ether = web3.fromWei(picoether, 'ether')
     var original_ether_unit = this.state[_ether_unit]
-
-    var original_price_per_token = new web3.BigNumber(this.state.price_per_token);
-    var unit;
-    var new_price_per_token;
     var new_ether_unit;
 
-
-    console.log({ether,finney,microether,picoether,})
-    console.log({microether_ether,finney_ether,picoether_ether,})
-
-    console.log(_ether_unit)
-    console.log(_sign)
-
-    switch(_ether_unit){
-      case 'ether': 
-        unit = new web3.BigNumber(ether);
-        break;
-      case 'finney': 
-        unit = new web3.BigNumber(finney_ether);
-        break;
-      case 'microether':
-        unit = new web3.BigNumber(microether_ether);
-        break;
-      case 'picoether':
-        unit = new web3.BigNumber(picoether_ether);
-        break;
-    
-    }
-
-    console.log(unit)
     if (_sign == '-'){
-      new_price_per_token = original_price_per_token.minus(unit).toNumber()
-      if(new_price_per_token < 0) new_price_per_token = original_price_per_token
       new_ether_unit = original_ether_unit - 1
       if(new_ether_unit < 0) new_ether_unit = original_ether_unit
-
     }else if (_sign == '+'){
-      new_price_per_token = original_price_per_token.plus(unit).toNumber()
       new_ether_unit = original_ether_unit + 1
 
     }
 
     this.setState({
-      price_per_token:new_price_per_token,
       [_ether_unit]:new_ether_unit
     })
-
-
-
 
   }
 
@@ -106,9 +71,7 @@ class Side_bar extends React.Component{
     const week = 10080;
     const month = 43800;
     const year = 525600;
-    console.log(_time_unit, sign)
-    console.log([_time_unit])
-    console.log(this.state[_time_unit])
+
     let original_units_of_time = this.state[_time_unit]
     let original_time = this.state.crowdsale_time_limit
     var new_time;
@@ -155,11 +118,6 @@ class Side_bar extends React.Component{
   }
   
 
-
-
-
-
-
   buy_token(){
     console.log('buy token')
     try{
@@ -180,11 +138,9 @@ class Side_bar extends React.Component{
             utils.hide_spinner('#block-spinner')
             utils.playSound(coin_drop);
             toastr.info(`Your Token has been delivered`)
-            
           })
-
           toastr.success(_txHash, 'Success! Your token is on it\'s way soon')
-          console.log(_txHash)
+          // console.log(_txHash)
         }
 
       })
@@ -192,9 +148,7 @@ class Side_bar extends React.Component{
       console.log('error caught')
       console.log(e)
       this.props.dispatch({type:"UI_ERR", e:e})
-
     }
-
   }
 
   spend_token(){
@@ -209,39 +163,46 @@ class Side_bar extends React.Component{
 
   crowdsale_name:this.state.crowdsale_name,
   crowdsale_time_limit:this.state.crowdsale_time_limit,
- price_per_token :this.state.price_per_token,
- crowdsale_goal :this.state.crowdsale_goal,
- crowdsale_goal :this.state.crowdsale_goal,
+ price_per_token :web3.toWei(this.state.price_per_token, 'ether'),
+ crowdsale_goal :web3.toWei(this.state.crowdsale_goal, 'ether'),
  token_goal :this.state.crowdsale_goal / this.state.price_per_token,
   token_id:token_id,
 }
           )
-        this.props.tokens.token_contract.spend_CS_Token(
-          this.state.crowdsale_name,//name
-          this.state.crowdsale_time_limit,//time limit
-          web3.toWei(this.state.price_per_token, 'ether'),//price per token
-          web3.toWei(this.state.crowdsale_goal, 'ether'),//usign goal for cap
-          web3.toWei(this.state.crowdsale_goal, 'ether'),//actual goal in constructor
-          this.state.crowdsale_goal / this.state.price_per_token,//token gol
-          token_id,//actual token used to create the crowdsale
-          (e, txHash)=>{//callback with txHash, hope for no error
-          if(e){
-            this.props.dispatch({type:"UI_ERR", e:e})
-            // toastr.error(e)
-            return
-          }else{
-            utils.call_when_mined(txHash, function(){
-            utils.hide_spinner('#block-spinner')
-            utils.playSound(crowd_cheer_sound);
-            toastr.info(txHash, 'Token '+token_id+' created a crowdsale')
+        try{
+          this.props.tokens.token_contract.spend_CS_Token(
+            this.state.crowdsale_name,//name
+            this.state.crowdsale_time_limit,//time limit
+            web3.toWei(this.price_per_token(), 'ether'),//price per token
+            web3.toWei(this.state.crowdsale_goal, 'ether'),//usign goal for cap
+            web3.toWei(this.state.crowdsale_goal, 'ether'),//actual goal in constructor
+            Math.ceil(this.state.crowdsale_goal / this.price_per_token()),//token gol
+            token_id,//actual token used to create the crowdsale
+            (e, txHash)=>{//callback with txHash, hope for no error
+            if(e){
+              this.props.dispatch({type:"UI_ERR", e:e})
+              // toastr.error(e)
+              return
+            }else{
+              utils.call_when_mined(txHash, function(){
+              utils.hide_spinner('#block-spinner')
+              utils.playSound(crowd_cheer_sound);
+              toastr.info(txHash, 'Token '+token_id+' created a crowdsale')
+
+            })
+
+            toastr.success(txHash, 'Success! Your Crowdsale is being created')
+            console.log(txHash)
+          }
 
           })
+        }catch(e){
+          console.log('WHHY ????')
+          console.log(e)
+          this.props.dispatch({type:"UI_ERR", e:e})
 
-          toastr.success(txHash, 'Success! Your Crowdsale is being created')
-          console.log(txHash)
         }
 
-        })
       })
     }catch(e){
       console.log('error caught')
@@ -253,19 +214,26 @@ class Side_bar extends React.Component{
 
   }
 
+  price_per_token(){
+    if(!web3){this.props.dispatch({type:"UI_ERR", e:'There is no Web3.... Check MetaMask'}); return } 
+    return web3.fromWei((
+            parseInt(web3.toWei(this.state.ether, 'ether'))+
+            parseInt(web3.toWei(this.state.finney, 'finney'))+
+            parseInt(web3.toWei(this.state.microether, 'microether'))+
+            parseInt(web3.toWei(this.state.picoether, 'picoether'))), 'ether');
+  }
+
   render(){
     console.log(this.props)
     console.log(this.state)
+
     const price_per_token = ()=>{
-      if( typeof this.state.price_per_token != 'number'){
-        return this.state.price_per_token.toNumber()
-      }else{
-        return this.state.price_per_token
-      }
+      return this.price_per_token()
     }
 
+
     const token_goal = ()=>{
-      return this.state.crowdsale_goal / this.state.price_per_token
+      return Math.ceil(this.state.crowdsale_goal / price_per_token())
     }
 
     const total_dollars = ()=>{
@@ -286,7 +254,6 @@ class Side_bar extends React.Component{
         <p>Create Crowdsale</p>
           <p>First buy a token</p>
         <button onClick={this.buy_token}>Buy Token</button>
-        {/*<button onClick="playSound('ka-ching_sound_effect');">Play</button>*/}
         <div id="sound"></div>
         <div className='spend_cs_token_contaner'>
           <p>Spend Cowdsale Token</p>
@@ -315,22 +282,43 @@ class Side_bar extends React.Component{
             <span>{price_per_token()} eth</span>
             <span> | ${dollars_per_token()}</span>
             <br />                                                                                              
-            <button className="set_time_btn minus" onClick={(e)=>{this.set_price_per_token('ether', '-')}}>-</button>{this.state.ether} ether<button className="set_time_btn plus" onClick={(e)=>{this.set_price_per_token('ether', '+')}}>+</button>
-            <button className="set_time_btn minus" onClick={(e)=>{this.set_price_per_token('finney', '-')}}>-</button><span>{this.state.finney}</span> finney<button className="set_time_btn plus" onClick={(e)=>{this.set_price_per_token('finney', '+')}}>+</button>
-            <button className="set_time_btn minus" onClick={(e)=>{this.set_price_per_token('microether', '-')}}>-</button><span>{this.state.microether}</span> microether<button className="set_time_btn plus" onClick={(e)=>{this.set_price_per_token('microether', '+')}}>+</button>
-            <button className="set_time_btn minus" onClick={(e)=>{this.set_price_per_token('picoether', '-')}}>-</button><span>{this.state.picoether}</span> picoether<button className="set_time_btn plus" onClick={(e)=>{this.set_price_per_token('picoether', '+')}}>+</button>
+            <button className="set_time_btn minus" onClick={(e)=>{this.set_price_per_token('ether', '-')}}>-</button>
+            <input
+              type="number"
+              name="ether"
+              onChange={(e)=>{this.token_price_input('ether', e.target.value)}}
+              value={this.state.ether}/>
+            ether<button className="set_time_btn plus" onClick={(e)=>{this.set_price_per_token('ether', '+')}}>+</button>
+            <button className="set_time_btn minus" onClick={(e)=>{this.set_price_per_token('finney', '-')}}>-</button>
+            <input
+              type="number"
+              name="finney"
+              onChange={(e)=>{this.token_price_input('finney', e.target.value)}}
+              value={this.state.finney} />
+            finney<button className="set_time_btn plus" onClick={(e)=>{this.set_price_per_token('finney', '+')}}>+</button>
+            <button className="set_time_btn minus" onClick={(e)=>{this.set_price_per_token('microether', '-')}}>-</button>
+            <input
+              type="number"
+              name="microether"
+              onChange={(e)=>{this.token_price_input('microether', e.target.value)}}
+              value={this.state.microether}/>
+            microether<button className="set_time_btn plus" onClick={(e)=>{this.set_price_per_token('microether', '+')}}>+</button>
+            <button className="set_time_btn minus" onClick={(e)=>{this.set_price_per_token('picoether', '-')}}>-</button>
+            <input
+              type="number"
+              name="napicoetherme"
+              onChange={(e)=>{this.token_price_input('picoether', e.target.value)}}
+              value={this.state.picoether}/>
+            picoether<button className="set_time_btn plus" onClick={(e)=>{this.set_price_per_token('picoether', '+')}}>+</button>
 
           </div>
           <div className="crowdsale_input">
             <label htmlFor='token_goal'>Token Goal</label>
             <input
             disabled
-              type="text"
+              type="number"
               name="token_goal"
-              //value={this.state.token_goal}
-              //value={this.state.crowdsale_goal / this.state.price_per_token}
               value={token_goal()}
-              // onChange={(e)=>{this.setState({token_goal:e.target.value})}}
             />
           </div>
           <div className="crowdsale_input">
@@ -391,8 +379,8 @@ const Token_price_btns = (props)=>{
   const picoether_ether = web3.fromWei(picoether, 'ether')
 
 
-  console.log({ether,finney,microether,picoether,})
-  console.log({microether_ether,finney_ether,picoether_ether,})
+  // console.log({ether,finney,microether,picoether,})
+  // console.log({microether_ether,finney_ether,picoether_ether,})
 
   return (
     <div className="inline">
@@ -406,70 +394,24 @@ const Token_price_btns = (props)=>{
 
 
 const Time_limit = (props)=>{
-  console.log(props)
-  console.log(    format_date_time_remaining(props.minutes))
+  // console.log(props)
+  // console.log(format_date_time_remaining(props.minutes))
   return (
     format_date_time_remaining(props.minutes)
   )
 }
 
 function format_date_time_remaining(_minutes){
-  // var seconds = _seconds_remaining/1000
   var minutes = _minutes
   var hours = minutes/60
   var days = hours/24
   var years = days/365
-  // if (minutes < 0 || hours < 0 || days < 0 || years < 0 ) return '0 Days, 0 Hours, 0 Minutes. 0 Seconds'; 
 
-  console.log({
-    minutes, hours, days, years
-  })
+  // console.log({
+  //   minutes, hours, days, years
+  // })
 
   return `${Math.floor(years)} Years, ${Math.floor(days%365)} Days,  ${Math.floor(hours%24)} Hours, ${Math.floor(minutes%60)} Minutes`
 }
 
 
-// function add(num1, num2) {
-//   num1 = num1.split('');
-//   num2 = num2.split('');
-
-//   num1 = num1.map(function (num) {
-//     return parseInt(num, 10);
-//   });
-
-//   num2 = num2.map(function (num) {
-//     return parseInt(num, 10);
-//   });
-
-//   if (num2.length > num1.length) {
-//     return _add(num2, num1);
-//   } else {
-//     return _add(num1, num2)
-//   }
-// }
-
-// function _add(num1, num2) {
-//   var num1_idx = num1.length-1;
-//   var num2_idx = num2.length-1;
-//   var remainder = 0;
-  
-//   for (; num1_idx > -1; num1_idx--, num2_idx--) {
-//     var sum = num1[num1_idx] + remainder;
-
-//     if (num2_idx > -1) {
-//       sum += num2[num2_idx];
-//     }
-
-//     if (sum <= 9 || num1_idx === 0) {
-//       remainder = 0;
-//       num1[num1_idx] = sum;
-//     } else if (sum >= 10) {
-//       remainder = 1;
-//       num1[num1_idx] = sum - 10;
-//     }
-    
-//     console.log(remainder);
-//   }
-  
-//   return num1.join('');
-// }

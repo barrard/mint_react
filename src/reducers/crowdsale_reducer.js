@@ -2,7 +2,9 @@ import store from '../store';
 
 
 export default function reducer(state={
-  _crowdsale_counter:0, crowdsales_obj:{}, getAllCrowdsaleObjsdata:false
+  _crowdsale_counter:0, crowdsales_obj:{}, getAllCrowdsaleObjsdata:false,
+  ERC721_CS_creator_address:"0x01ed6f621b628e58cfed4ebcbd62026734d5aac2",//Rinkeby
+
 }, action) {
   switch(action.type){
 
@@ -48,29 +50,13 @@ export default function reducer(state={
         ...state, 
         crowdsales_obj:{
           ...state.crowdsales_obj,
-              [key]:action.crowdsale_obj
-            
+          [key]:{
+            ...action.crowdsale_obj,
+            ...state.crowdsales_obj[key],
+          }
         }
       }
     }
-
-
-
-    // case "CROWDSALE_CONTRACT_OBJ":{
-    //   console.log(action.crowdsale_address)
-    //   console.log(action.crodsale_obj)
-    //   const key = action.crowdsale_address
-    //   const val = action.crodsale_obj
-    //   return {
-    //     ...state, 
-    //     crowdsale_obj:{
-    //       ...state.crowdsale_obj,
-    //           [key]:[val]
-            
-    //     }
-    //   }
-    // }
-
     
 
 

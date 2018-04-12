@@ -113,15 +113,35 @@
   font-size: 2em;
 
 }
+.crowdsale_grid{
+  display: grid;
+}
+.crowdsale_list_address{
+  margin: 1em;
+  cursor: pointer;
+  text-decoration: underline;
+  font-size:2em;
+}
+.mint_btn{
+  background-color: hsl(120,100%,79.8%)
+}
+
+.mint_1{color: brown;}
+.mint_10{color: blue;}
+.mint_50{color: red;}
 .clickable{
   cursor: pointer;
 }
 
 .user_events_grid{
   display: grid;
-  grid-template-columns: 1fr 1fr;
-  grid-template-rows: 300px 1fr;
+  grid-template-columns: auto auto;
+  grid-template-rows: auto auto;
   grid-gap: 2em;
+}
+
+.red_border{
+  border: red solid 1px;
 }
 
 table{
@@ -189,7 +209,7 @@ table{
 }
 
 .tiny_text{
-  font-size: 6px;
+  font-size: 10px;
 }
 
 .topbar{
@@ -208,3 +228,19 @@ table{
   font-size: 2em;
 }
 
+.closed_sale{
+  background: indianred;
+}
+
+.finalized_sale{
+  background: skyblue;
+}
+
+.active_sale{
+  background: lawngreen
+}
+
+.small-box{
+  width: 1.5em;
+  height: 1.5em;
+}

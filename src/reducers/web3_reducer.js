@@ -13,7 +13,13 @@ export default function reducer(state={
   switch(action.type){
 
     case "UI_ERR":{
-      toastr.error(action.e)
+      try{
+        toastr.error(action.e)
+      }catch(e){
+        console.log('WHYYY???')
+        console.log(e)
+        toastr.error('Transaction cancled')
+      }
       return{...state}
     }
 
