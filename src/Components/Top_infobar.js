@@ -54,8 +54,8 @@ class Top_infobar extends React.Component{
 
       <div className='topbar'>
         <BC_Data />
-        <button onClick={this.onClick}>click me</button>       
-        <div>Top bar</div>
+        {/*<button onClick={this.onClick}>click me</button>       */}
+        {/*<div>Top bar</div>*/}
         <p>ERC721MintableToken Address:{this.props.token_address}</p>
           <div>Your tokens {coins}</div>
         <p>Your Address:{this.props.address}</p>

@@ -163,9 +163,9 @@ class Side_bar extends React.Component{
 
   crowdsale_name:this.state.crowdsale_name,
   crowdsale_time_limit:this.state.crowdsale_time_limit,
- price_per_token :web3.toWei(this.state.price_per_token, 'ether'),
- crowdsale_goal :web3.toWei(this.state.crowdsale_goal, 'ether'),
- token_goal :this.state.crowdsale_goal / this.state.price_per_token,
+ price_per_token :parseInt(web3.toWei(this.price_per_token(), 'ether')),
+ crowdsale_goal :parseInt(web3.toWei(this.state.crowdsale_goal, 'ether')),
+ token_goal :Math.ceil(this.state.crowdsale_goal / this.price_per_token()),
   token_id:token_id,
 }
           )
@@ -233,7 +233,7 @@ class Side_bar extends React.Component{
 
 
     const token_goal = ()=>{
-      return Math.ceil(this.state.crowdsale_goal / price_per_token())
+      return Math.ceil(this.state.crowdsale_goal / this.price_per_token())
     }
 
     const total_dollars = ()=>{
@@ -255,106 +255,110 @@ class Side_bar extends React.Component{
           <p>First buy a token</p>
         <button onClick={this.buy_token}>Buy Token</button>
         <div id="sound"></div>
-        <div className='spend_cs_token_contaner'>
-          <p>Spend Cowdsale Token</p>
-          <div className="crowdsale_input">
-            <label htmlFor='crowdsale_name'>Crowdsale name</label>
-            <input
-              type="text"
-              name="crowdsale_name"
-              value={this.state.crowdsale_name}
-              onChange={(e)=>{this.setState({crowdsale_name:e.target.value})}}
-            />
-          </div>
-          <div className="crowdsale_input">
-            <label htmlFor='crowdsale_goal'>Crowdsale Goal (eth)</label>
-            <input
-              type="number"
-              name="crowdsale_goal"
-              value={this.state.crowdsale_goal}//TODO ADD IF WE WANT A CAP
-              onChange={(e)=>{this.setState({crowdsale_goal:e.target.value})}}
-            />
-            <span>${total_dollars()}@</span>
-            <span>${this.props.ETH_DATA.PRICE} / ETH</span>
-          </div>
-          <div className="crowdsale_input">
-            <label htmlFor='price_per_token'>Price per Token (eth)</label>
-            <span>{price_per_token()} eth</span>
-            <span> | ${dollars_per_token()}</span>
-            <br />                                                                                              
-            <button className="set_time_btn minus" onClick={(e)=>{this.set_price_per_token('ether', '-')}}>-</button>
-            <input
-              type="number"
-              name="ether"
-              onChange={(e)=>{this.token_price_input('ether', e.target.value)}}
-              value={this.state.ether}/>
-            ether<button className="set_time_btn plus" onClick={(e)=>{this.set_price_per_token('ether', '+')}}>+</button>
-            <button className="set_time_btn minus" onClick={(e)=>{this.set_price_per_token('finney', '-')}}>-</button>
-            <input
-              type="number"
-              name="finney"
-              onChange={(e)=>{this.token_price_input('finney', e.target.value)}}
-              value={this.state.finney} />
-            finney<button className="set_time_btn plus" onClick={(e)=>{this.set_price_per_token('finney', '+')}}>+</button>
-            <button className="set_time_btn minus" onClick={(e)=>{this.set_price_per_token('microether', '-')}}>-</button>
-            <input
-              type="number"
-              name="microether"
-              onChange={(e)=>{this.token_price_input('microether', e.target.value)}}
-              value={this.state.microether}/>
-            microether<button className="set_time_btn plus" onClick={(e)=>{this.set_price_per_token('microether', '+')}}>+</button>
-            <button className="set_time_btn minus" onClick={(e)=>{this.set_price_per_token('picoether', '-')}}>-</button>
-            <input
-              type="number"
-              name="napicoetherme"
-              onChange={(e)=>{this.token_price_input('picoether', e.target.value)}}
-              value={this.state.picoether}/>
-            picoether<button className="set_time_btn plus" onClick={(e)=>{this.set_price_per_token('picoether', '+')}}>+</button>
-
-          </div>
-          <div className="crowdsale_input">
-            <label htmlFor='token_goal'>Token Goal</label>
-            <input
-            disabled
-              type="number"
-              name="token_goal"
-              value={token_goal()}
-            />
-          </div>
-          <div className="crowdsale_input">
-            <label htmlFor='crowdsale_time_limit'>Crowdsale Timelimit (min)</label>
-            <input
-            disabled
-              type="number"
-              name="crowdsale_time_limit"
-              value={this.state.crowdsale_time_limit}
-              // onChange={(e)=>{this.setState({crowdsale_time_limit:e.target.value})}}
-            />
-            <br/>
-            <div className="text_time_limit">
-              <Time_limit minutes={this.state.crowdsale_time_limit} />
+        {this.props.tokens.get_my_tokens.length &&
+          <div className='spend_cs_token_contaner'>
+            <p>Spend Cowdsale Token</p>
+            <div className="crowdsale_input">
+              <label htmlFor='crowdsale_name'>Crowdsale name</label>
+              <input
+                type="text"
+                name="crowdsale_name"
+                value={this.state.crowdsale_name}
+                onChange={(e)=>{this.setState({crowdsale_name:e.target.value})}}
+              />
             </div>
-            <br/>
-            <button className="set_time_btn minus" onClick={(e)=>{this.set_time_limit('minute', '-')}}>-</button>{this.state.minute} minute<button className="set_time_btn plus" onClick={(e)=>{this.set_time_limit('minute', '+')}}>+</button>
-            <button className="set_time_btn minus" onClick={(e)=>{this.set_time_limit('hour', '-')}}>-</button><span>{this.state.hour}</span> hour<button className="set_time_btn plus" onClick={(e)=>{this.set_time_limit('hour', '+')}}>+</button>
-            <button className="set_time_btn minus" onClick={(e)=>{this.set_time_limit('day', '-')}}>-</button><span>{this.state.day}</span> day<button className="set_time_btn plus" onClick={(e)=>{this.set_time_limit('day', '+')}}>+</button>
-            <button className="set_time_btn minus" onClick={(e)=>{this.set_time_limit('week', '-')}}>-</button><span>{this.state.week}</span> week<button className="set_time_btn plus" onClick={(e)=>{this.set_time_limit('week', '+')}}>+</button>
-            <button className="set_time_btn minus" onClick={(e)=>{this.set_time_limit('month', '-')}}>-</button><span>{this.state.month}</span> month<button className="set_time_btn plus" onClick={(e)=>{this.set_time_limit('month', '+')}}>+</button>
-          </div>
+            <div className="crowdsale_input">
+              <label htmlFor='crowdsale_goal'>Crowdsale Goal (eth)</label>
+              <input
+                type="number"
+                name="crowdsale_goal"
+                value={this.state.crowdsale_goal}//TODO ADD IF WE WANT A CAP
+                onChange={(e)=>{this.setState({crowdsale_goal:e.target.value})}}
+              />
+              <span>${total_dollars()}@</span>
+              <span>${this.props.ETH_DATA.PRICE} / ETH</span>
+            </div>
+            <div className="crowdsale_input">
+              <label htmlFor='price_per_token'>Price per Token (eth)</label>
+              <span>{price_per_token()} eth</span>
+              <span> | ${dollars_per_token()}</span>
+              <br />                                                                                              
+              <button className="set_time_btn minus" onClick={(e)=>{this.set_price_per_token('ether', '-')}}>-</button>
+              <input
+                type="number"
+                name="ether"
+                onChange={(e)=>{this.token_price_input('ether', e.target.value)}}
+                value={this.state.ether}/>
+              ether<button className="set_time_btn plus" onClick={(e)=>{this.set_price_per_token('ether', '+')}}>+</button>
+              <button className="set_time_btn minus" onClick={(e)=>{this.set_price_per_token('finney', '-')}}>-</button>
+              <input
+                type="number"
+                name="finney"
+                onChange={(e)=>{this.token_price_input('finney', e.target.value)}}
+                value={this.state.finney} />
+              finney<button className="set_time_btn plus" onClick={(e)=>{this.set_price_per_token('finney', '+')}}>+</button>
+              <button className="set_time_btn minus" onClick={(e)=>{this.set_price_per_token('microether', '-')}}>-</button>
+              <input
+                type="number"
+                name="microether"
+                onChange={(e)=>{this.token_price_input('microether', e.target.value)}}
+                value={this.state.microether}/>
+              microether<button className="set_time_btn plus" onClick={(e)=>{this.set_price_per_token('microether', '+')}}>+</button>
+              <button className="set_time_btn minus" onClick={(e)=>{this.set_price_per_token('picoether', '-')}}>-</button>
+              <input
+                type="number"
+                name="napicoetherme"
+                onChange={(e)=>{this.token_price_input('picoether', e.target.value)}}
+                value={this.state.picoether}/>
+              picoether<button className="set_time_btn plus" onClick={(e)=>{this.set_price_per_token('picoether', '+')}}>+</button>
+
+            </div>
+            <div className="crowdsale_input">
+              <label htmlFor='token_goal'>Token Goal</label>
+              <input
+              disabled
+                type="number"
+                name="token_goal"
+                value={token_goal()}
+              />
+            </div>
+            <div className="crowdsale_input">
+              <label htmlFor='crowdsale_time_limit'>Crowdsale Timelimit (min)</label>
+              <input
+              disabled
+                type="number"
+                name="crowdsale_time_limit"
+                value={this.state.crowdsale_time_limit}
+                // onChange={(e)=>{this.setState({crowdsale_time_limit:e.target.value})}}
+              />
+              <br/>
+              <div className="text_time_limit">
+                <Time_limit minutes={this.state.crowdsale_time_limit} />
+              </div>
+              <br/>
+              <button className="set_time_btn minus" onClick={(e)=>{this.set_time_limit('minute', '-')}}>-</button>{this.state.minute} minute<button className="set_time_btn plus" onClick={(e)=>{this.set_time_limit('minute', '+')}}>+</button>
+              <button className="set_time_btn minus" onClick={(e)=>{this.set_time_limit('hour', '-')}}>-</button><span>{this.state.hour}</span> hour<button className="set_time_btn plus" onClick={(e)=>{this.set_time_limit('hour', '+')}}>+</button>
+              <button className="set_time_btn minus" onClick={(e)=>{this.set_time_limit('day', '-')}}>-</button><span>{this.state.day}</span> day<button className="set_time_btn plus" onClick={(e)=>{this.set_time_limit('day', '+')}}>+</button>
+              <button className="set_time_btn minus" onClick={(e)=>{this.set_time_limit('week', '-')}}>-</button><span>{this.state.week}</span> week<button className="set_time_btn plus" onClick={(e)=>{this.set_time_limit('week', '+')}}>+</button>
+              <button className="set_time_btn minus" onClick={(e)=>{this.set_time_limit('month', '-')}}>-</button><span>{this.state.month}</span> month<button className="set_time_btn plus" onClick={(e)=>{this.set_time_limit('month', '+')}}>+</button>
+            </div>
+            
           
- 
-          <div className="crowdsale_input">
-            <label htmlFor='crowdsale_wallet'>Crowdsale Wallet (address)</label>
-            <input
-            disabled
-              type="text"
-              name="crowdsale_wallet"
-              value={this.props.address}
-              onChange={(e)=>{this.setState({crowdsale_wallet:e.target.value})}}
-            />
+            <div className="crowdsale_input">
+              <label htmlFor='crowdsale_wallet'>Crowdsale Wallet (address)</label>
+              <input
+              disabled
+                type="text"
+                name="crowdsale_wallet"
+                value={this.props.address}
+                onChange={(e)=>{this.setState({crowdsale_wallet:e.target.value})}}
+              />
+            </div>
+            <button onClick={this.spend_token}>Create Your Crowdsale</button>
           </div>
-          <button onClick={this.spend_token}>Create Your Crowdsale</button>
-        </div>
+
+        }
+
       </div>
     )
   }

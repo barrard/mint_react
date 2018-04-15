@@ -155,6 +155,34 @@ class Crowdsale_list extends React.Component{
 
 
   render(){
+    var active_arr
+    var closed_arr
+    var finalized_arr
+    const CS_array = ()=>{
+      active_arr = [];
+      closed_arr = [];
+      finalized_arr = [];
+      const CS_obj = this.props.crowdsales_obj
+      for ( let address in CS_obj ){
+        if(CS_obj[address].isFinalized) finalized_arr.push(CS_obj[address])
+        else if(CS_obj[address].hasClosed) closed_arr.push(CS_obj[address])
+        else active_arr.push(CS_obj[address])
+      }
+    }
+    CS_array()
+  const active_sale_count = ()=>{
+    return active_arr.length
+
+    // const arr
+    // return ()=>{this.props.crowdsales_obj}
+  }
+  const closed_sale_count= ()=>{
+    return closed_arr.length
+  }
+  const finalized_sale_count= ()=>{
+    return finalized_arr.length
+
+  }
     // console.log(this.state)
     // console.log(this.props)
     // console.log(this.state.current_crowdsale)
@@ -162,9 +190,9 @@ class Crowdsale_list extends React.Component{
       <div className="crowdsale_list">
         <h3>Crowdsale List</h3>
           <p>total crowdsales: => {this.props.crowdsale_counter}</p>
-            <p>Active <div className="small-box active_sale"></div></p>
-            <p>Closed <div className="small-box closed_sale"></div></p>
-            <p>Finalized <div className="small-box finalized_sale"></div></p>
+            <span>Active</span><div className="small-box active_sale">{active_sale_count()}</div>
+            <span>Closed</span><div className="small-box closed_sale">{closed_sale_count()}</div>
+            <span>Finalized</span> <div className="small-box finalized_sale">{finalized_sale_count()}</div>
             {this.make_propery_list()}
 
         
