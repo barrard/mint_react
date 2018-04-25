@@ -233,7 +233,16 @@ class Side_bar extends React.Component{
 
 
     const token_goal = ()=>{
-      return Math.ceil(this.state.crowdsale_goal / this.price_per_token())
+      var val = Math.ceil(this.state.crowdsale_goal / this.price_per_token())
+      console.log(val)
+      console.log(typeof val)
+      if( isNaN(val))
+      console.log(val == NaN)
+      console.log(val === NaN)
+      console.log(val === 'NaN')
+      console.log(val == 'NaN')
+      if(isNaN(val)) val = 0 
+      return val
     }
 
     const total_dollars = ()=>{
@@ -241,8 +250,12 @@ class Side_bar extends React.Component{
       return this.state.crowdsale_goal * this.props.ETH_DATA.PRICE 
     }
     const dollars_per_token = ()=>{
-      console.log(price_per_token() * this.props.ETH_DATA.PRICE)
-      return (price_per_token() * this.props.ETH_DATA.PRICE)
+      var val = price_per_token() * this.props.ETH_DATA.PRICE
+      console.log(val=== NaN)
+      console.log(typeof val=== NaN)
+      console.log(val=== 'NaN')
+      if(val === NaN) val = 0
+      return val
     }
 
     return(

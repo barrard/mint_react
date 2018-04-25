@@ -49,7 +49,7 @@ class Blockchain_data extends React.Component{
     this.get_data_array();
     this.setTokenWatchers();
     this.getAllCrowdsaleObjsdata();
-    this.init_wss_data()
+//    this.init_wss_data()//live eth price update websocks
 
   }
 

@@ -10,11 +10,19 @@ class Crowdsale_list extends React.Component{
   constructor(props) {
     super(props);
     this.state={
-      current_crowdsale:false
+      current_crowdsale:false,
+      to_show:{
+        closed:false,
+        finalized:true,
+        active:true
+      }
     }
     this.display_crowdsale_details = this.display_crowdsale_details.bind(this)
     this.mint = this.mint.bind(this)
     this.finalize_crowdsale = this.finalize_crowdsale.bind(this)
+    this.handle_show_crowdsale_checkbox = this.handle_show_crowdsale_checkbox.bind(this)
+    this.unset_current_crowdsale = this.unset_current_crowdsale.bind(this)
+    this.fundBtn = this.fundBtn.bind(this)
 
   }
 
@@ -50,7 +58,8 @@ class Crowdsale_list extends React.Component{
     for(let address in this.props.crowdsales_obj){
       console.log(address)
       crowdsale_lists.push(
-        <List_property_element        
+        <List_property_element
+        to_show={this.state.to_show}      
         name={this.props.crowdsales_obj[address].name}
         hasClosed={this.props.crowdsales_obj[address].hasClosed}
         isFinalized={this.props.crowdsales_obj[address].isFinalized}
@@ -145,13 +154,38 @@ class Crowdsale_list extends React.Component{
           current_crowdsale,
         })
       }
-    }, 2000)
+    }, 200)
 
     this.setState({
       current_crowdsale:_acct
     })
     // return crowdsale_details
   }
+
+  handle_show_crowdsale_checkbox(type){
+    console.log(type)
+    var new_state = !this.state.to_show[type]
+    var new_showing = {...this.state.to_show}
+    this.setState({
+      to_show:{
+        ...new_showing,
+        [type]:new_state
+      }
+
+    })
+  }
+
+  unset_current_crowdsale(){
+    this.setState({
+      current_crowdsale:undefined
+    })
+  }
+fundBtn(token_ammount, account_number){
+  console.log('fundBtn')
+  console.log(`send ${token_ammount} Token(s) to account number: ${account_number}`)
+
+}
+
 
 
   render(){
@@ -163,6 +197,7 @@ class Crowdsale_list extends React.Component{
       closed_arr = [];
       finalized_arr = [];
       const CS_obj = this.props.crowdsales_obj
+      console.log(CS_obj)
       for ( let address in CS_obj ){
         if(CS_obj[address].isFinalized) finalized_arr.push(CS_obj[address])
         else if(CS_obj[address].hasClosed) closed_arr.push(CS_obj[address])
@@ -187,45 +222,49 @@ class Crowdsale_list extends React.Component{
     // console.log(this.props)
     // console.log(this.state.current_crowdsale)
     return(
-      <div className="crowdsale_list">
+      <div className="crowdsale_list_view">
+      {this.state.current_crowdsale &&
+        <div className="top-right-pannel">
+          <div>Crowdsale Details</div>
+          <Crowdsale_details 
+            unset_current_crowdsale={this.unset_current_crowdsale}
+            current_crowdsale={this.state.current_crowdsale.account} 
+            // address={this.state.current_crowdsale.account}
+            balance={this.state.current_crowdsale.balance}
+            wallet_account={this.state.current_crowdsale.wallet_account}
+            id={this.state.current_crowdsale.id}
+            goal={web3.fromWei(this.state.current_crowdsale.goal, 'ether')}
+            token_goal={this.state.current_crowdsale.token_goal}
+            ethRaised={this.state.current_crowdsale.ethRaised}
+            time_limit={this.state.current_crowdsale.time_limit}
+            name={this.state.current_crowdsale.name}
+            user_account={this.props.user_account}
+            mintBtn={this.mint}
+            fundBtn={this.fundBtn}
+            openingTime={this.state.current_crowdsale.openingTime}
+            closingTime={this.state.current_crowdsale.closingTime}
+            hasClosed={this.state.current_crowdsale.hasClosed}
+            isFinalized={this.state.current_crowdsale.isFinalized}
+            time_remaining={this.state.current_crowdsale.time_remaining}
+            finalize={()=>{this.finalize_crowdsale(this.state.current_crowdsale.account)}}
+
+          />
+        </div>
+      }{!this.state.current_crowdsale &&
+        <div className="top-right-pannel">Please slect a crowdsale to see details </div>
+      }
         <h3>Crowdsale List</h3>
-          <p>total crowdsales: => {this.props.crowdsale_counter}</p>
-            <span>Active</span><div className="small-box active_sale">{active_sale_count()}</div>
-            <span>Closed</span><div className="small-box closed_sale">{closed_sale_count()}</div>
-            <span>Finalized</span> <div className="small-box finalized_sale">{finalized_sale_count()}</div>
-            {this.make_propery_list()}
-
-        
-        {this.state.current_crowdsale &&
-          <div>
-            <div>Crowdsale Details</div>
-            <Crowdsale_details 
-              current_crowdsale={this.state.current_crowdsale.account} 
-              // address={this.state.current_crowdsale.account}
-              balance={this.state.current_crowdsale.balance}
-              wallet_account={this.state.current_crowdsale.wallet_account}
-              id={this.state.current_crowdsale.id}
-              goal={web3.fromWei(this.state.current_crowdsale.goal, 'ether')}
-              token_goal={this.state.current_crowdsale.token_goal}
-              ethRaised={this.state.current_crowdsale.ethRaised}
-              time_limit={this.state.current_crowdsale.time_limit}
-              name={this.state.current_crowdsale.name}
-              user_account={this.props.user_account}
-              mintBtn={this.mint}
-              fundBtn={this.fund}
-              openingTime={this.state.current_crowdsale.openingTime}
-              closingTime={this.state.current_crowdsale.closingTime}
-              hasClosed={this.state.current_crowdsale.hasClosed}
-              isFinalized={this.state.current_crowdsale.isFinalized}
-              time_remaining={this.state.current_crowdsale.time_remaining}
-              finalize={()=>{this.finalize_crowdsale(this.state.current_crowdsale.account)}}
-
-            />
-          </div>
-        }{!this.state.current_crowdsale &&
-          <div>Please slect a crowdsale to see details </div>
-        }
-
+        <Crowdsale_counters 
+          active_sale_count={active_sale_count()}
+          closed_sale_count={closed_sale_count()}
+          finalized_sale_count={finalized_sale_count()}
+          crowdsale_counter={this.props.crowdsale_counter}
+          show_active_crowdsale={this.state.to_show.active}
+          show_closed_crowdsale={this.state.to_show.closed}
+          show_finalized_crowdsale={this.state.to_show.finalized}
+          handle_show_crowdsale_checkbox={this.handle_show_crowdsale_checkbox}
+        />
+        {this.make_propery_list()}
       </div>
     )
   }
@@ -243,12 +282,67 @@ const mapStateToProps = (state)=>{
   }
 export default connect(mapStateToProps)(Crowdsale_list);
 
+const Crowdsale_counters = (props)=>{
+  return(
+    <div>
+      <p>total crowdsales: => {props.crowdsale_counter}</p>
+      <span>
+        Active 
+        <input
+          type="checkbox"
+          checked={props.show_active_crowdsale}
+          onChange={()=>{props.handle_show_crowdsale_checkbox('active')}}
+        />
+      </span>
+      <div className="small-box active_sale">
+        {props.active_sale_count} 
+      </div>
+      <span>
+        Closed
+        <input
+          type="checkbox"
+          checked={props.show_closed_crowdsale}
+          onChange={()=>{props.handle_show_crowdsale_checkbox('closed')}}
+        />
+      </span>
+      <div className="small-box closed_sale">
+        {props.closed_sale_count}
+      </div>
+      <span>
+        Finalized
+        <input
+          type="checkbox"
+          checked={props.show_finalized_crowdsale}
+          onChange={()=>{props.handle_show_crowdsale_checkbox('finalized')}}
+        />
+      </span>
+      <div className="small-box finalized_sale">
+        {props.finalized_sale_count}
+      </div>
+    </div>
+  )
+}
+
 const List_property_element = (props)=>{
   console.log(props)
   var state_of_sale;
+  var show = ''
+
   state_of_sale = 'active_sale'
-  if(props.hasClosed) state_of_sale = 'closed_sale'
-  if(props.isFinalized) state_of_sale = 'finalized_sale'
+  if(props.hasClosed && !props.isFinalized) {
+    state_of_sale = 'closed_sale'
+   show = props.to_show.closed ? '' :  'hidden'
+
+  }
+  if(props.isFinalized) {
+    state_of_sale = 'finalized_sale'
+   show = props.to_show.finalized ? '' :  'hidden'
+
+  }
+
+  if(state_of_sale === 'active_sale'){
+   show = props.to_show.active ? '' :  'hidden'
+  }
 
   const tokens_needed_to_sell = ()=>{
     if(props.ethRaised == 0) return props.token_goal
@@ -261,8 +355,8 @@ const List_property_element = (props)=>{
   }
 
   return(
-    <div className={`red_border ` + state_of_sale}>
-      <div className="crowdsale_list_address"
+    <div className={`red_border ${show} ${state_of_sale}`}>
+      <div className="crowdsale_list_name"
       onClick={props.onClick}
       >{props.name}</div>
 
@@ -298,14 +392,13 @@ const Crowdsale_details = (props)=>{
    return (props.goal - props.ethRaised)
   }
 
-
-
-  
-
-
-
   return(
+    <div>
+      {utils.close_btn(()=>{
+        props.unset_current_crowdsale()
+      })}
     <div className="crowdsale_grid">
+
     <h1>{props.name}</h1>
     <h2>{props.current_crowdsale}</h2>
     <div><h5>Wallet  <span>{props.wallet_account}</span></h5>
@@ -320,6 +413,7 @@ const Crowdsale_details = (props)=>{
       finalize ={props.finalize}
       wallet_account={props.wallet_account}
       user_account={props.user_account}
+      fundBtn={props.fundBtn}
     />
     <div>ID: {props.id}</div>
 
@@ -336,8 +430,7 @@ const Crowdsale_details = (props)=>{
     <Time_remaining closingTime={props.closingTime} />
     <div>We need to raise {ETH_needed_to_go()} more ETH To reach our goal</div>
     <div>This means we need to sell {tokens_needed_to_sell()} more Tokens</div>
-
-
+    </div>
     </div>
   )
 }

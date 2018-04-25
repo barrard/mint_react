@@ -1,7 +1,6 @@
 import React from 'react';
 import {connect} from 'react-redux';
 import toastr from 'toastr'
-import BC_Data from './Data/Blockchain_data';
 
     let container;
 
@@ -53,7 +52,6 @@ class Top_infobar extends React.Component{
     return(
 
       <div className='topbar'>
-        <BC_Data />
         {/*<button onClick={this.onClick}>click me</button>       */}
         {/*<div>Top bar</div>*/}
         <p>ERC721MintableToken Address:{this.props.token_address}</p>

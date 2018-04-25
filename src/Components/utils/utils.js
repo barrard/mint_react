@@ -1,3 +1,5 @@
+import React from 'react';
+
 import util from './utils.js'
 
 const web3 = window.web3
@@ -6,6 +8,9 @@ const block_hash = [];
 
 
 export default {
+  routes:{
+    index:'mint_crowdsale'
+  },
   format_date_time_stamp:(_num)=>{
     let date = new Date(_num)
     let seconds = date.getSeconds()
@@ -21,10 +26,10 @@ export default {
   format_date_time_remaining:(closing_time)=>{
     const d = new Date()
     const t = Math.floor(d.getTime()/1000)
-    console.log(closing_time)
-    console.log(t)
+    // console.log(closing_time)
+    // console.log(t)
     const time_differnece = closing_time-t
-    console.log(time_differnece)
+    // console.log(time_differnece)
     var seconds = time_differnece
     var minutes = seconds/60
     var hours = minutes/60
@@ -37,6 +42,19 @@ export default {
     // })
 
     return `${Math.floor(days%365)} Days, ${Math.floor(hours%24)} Hours, ${Math.floor(minutes%60)} Minutes, ${Math.floor(seconds%60)} seconds`
+  },
+
+  close_btn:(fn)=>{
+    return(
+      <a href="#" 
+        className="clickable close_btn"
+        onClick={()=>{
+          console.log('close?')          
+          fn()
+        }}>
+        X
+      </a>
+    )
   },
 
   check_block:(_blockHash)=>{

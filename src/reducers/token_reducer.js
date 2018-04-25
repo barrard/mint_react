@@ -3,18 +3,20 @@ import toastr from 'toastr'
 const web3 = window.web3
 
 export default function reducer(state={
-  totalSupply:0, ERC721MintableToken_balance:0,  
   Approval_events_count:0, 
   Approval_events_array:[],
-  Transfer_events_count:0, 
-  Transfer_events_array:[],
-  Prop_token_minted_events_count:0, 
-  Prop_token_minted_events_array:[],
   Crowdsale_initiated_events_count:0, 
   Crowdsale_initiated_events_array:[],
+  ERC721MintableToken_balance:0,  
+  get_my_tokens:[],
+  Prop_token_minted_events_count:0, 
+  Prop_token_minted_events_array:[],
   Seed_Tokes_Minted_count:0, 
   Seed_Tokes_Minted_events_array:[],
-  get_my_tokens:[],
+  Transfer_events_count:0, 
+  Transfer_events_array:[],
+  totalSupply:0,
+
   data_fetching:{
     Transfer:false,
     Approval:false,

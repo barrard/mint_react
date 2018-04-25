@@ -9,6 +9,7 @@ class Background_img extends React.Component{
   render(){
     return (
       <div></div>
+      //<div id="background_image"></div>
 
     )
 
@@ -16,4 +17,3 @@ class Background_img extends React.Component{
 }
 export default Background_img
 
-      // {/*<div id="background_image"></div>*/}
