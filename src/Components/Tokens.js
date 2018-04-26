@@ -52,12 +52,12 @@ class Top_infobar extends React.Component{
     return(
 
       <div className='topbar'>
-        {/*<button onClick={this.onClick}>click me</button>       */}
-        {/*<div>Top bar</div>*/}
+      <p>Total ERC271Mintable Tokens: {this.props.tokens.totalSupply}</p>
+      <p>Property Tokens: {this.props.tokens.prop_token_counter}</p>
         <p>ERC721MintableToken Address:{this.props.token_address}</p>
           <div>Your tokens {coins}</div>
         <p>Your Address:{this.props.address}</p>
-        <p>ERC721MintableToken Balance:{this.props.tokens_balance}</p>
+        <p>ERC721MintableToken Balance:{this.props.tokens_balance} eth</p>
         <p>{this.props.crowdsales} Crowdsales already started</p>
       </div>
 
@@ -83,7 +83,8 @@ const mapStateToProps = (state)=>{
       tokens_balance:state.tokens.ERC721MintableToken_balance,
       token_address:state.tokens.ERC721MintableToken_address,
       my_tokens:state.tokens.get_my_tokens,
-      crowdsales:state.tokens._crowdsale_counter
+      crowdsales:state.tokens._crowdsale_counter,
+      tokens:state.tokens
     }
   }
 export default connect(mapStateToProps)(Top_infobar);

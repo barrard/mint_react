@@ -2,9 +2,9 @@ import React from 'react';
 import {connect} from 'react-redux';
 import toastr from 'toastr'
 import utils from './utils/utils'
-import kaChing_m4a from './sounds/ka-ching_sound_effect.m4a'
-import crowd_cheer_sound from './sounds/small_crowd_cheering_and_clapping.wav.mp3'
-import coin_drop from './sounds/COIN_DROPPED_ON_TABLE.mp3';
+import Create_Header from './Create_Components/header.js'
+import Spend_token_btn from './Create_Components/Spend_token_btn.js'
+
 
 const web3 = window.web3
 
@@ -27,8 +27,6 @@ class Side_bar extends React.Component{
       microether:0,
 
     }
-    this.buy_token = this.buy_token.bind(this)
-    this.spend_token = this.spend_token.bind(this)
     this.set_time_limit = this.set_time_limit.bind(this)
     this.set_price_per_token = this.set_price_per_token.bind(this)
     this.token_price_input = this.token_price_input.bind(this)
@@ -118,101 +116,9 @@ class Side_bar extends React.Component{
   }
   
 
-  buy_token(){
-    console.log('buy token')
-    try{
-      web3.eth.sendTransaction({
-        from:web3.eth.coinbase,
-        to:this.props.tokens.ERC721MintableToken_address,
-        value:web3.toWei(1, "ether")
-      }, (e, _txHash)=>{
-        if(e){
-          utils.hide_spinner('#block-spinner')
-          this.props.dispatch({type:"UI_ERR", e:e})
-          console.log('an error occured')
-          console.log(e)
-        }else if(_txHash){
-          console.log(_txHash)
-          utils.playSound(kaChing_m4a);
-          utils.call_when_mined(_txHash, ()=>{
-            utils.hide_spinner('#block-spinner')
-            utils.playSound(coin_drop);
-            toastr.info(`Your Token has been delivered`)
-          })
-          toastr.success(_txHash, 'Success! Your token is on it\'s way soon')
-          // console.log(_txHash)
-        }
-
-      })
-    }catch(e){
-      console.log('error caught')
-      console.log(e)
-      this.props.dispatch({type:"UI_ERR", e:e})
-    }
-  }
-
-  spend_token(){
-    console.log('spend token')
-    try{
-      this.props.tokens.token_contract.get_one_OwnerToken_id(this.props.address, (e, r)=>{
-        console.log(e)
-        console.log(r)
-        const token_id = r.toNumber()
-        console.log(
-{
-
-  crowdsale_name:this.state.crowdsale_name,
-  crowdsale_time_limit:this.state.crowdsale_time_limit,
- price_per_token :parseInt(web3.toWei(this.price_per_token(), 'ether')),
- crowdsale_goal :parseInt(web3.toWei(this.state.crowdsale_goal, 'ether')),
- token_goal :Math.ceil(this.state.crowdsale_goal / this.price_per_token()),
-  token_id:token_id,
-}
-          )
-        try{
-          this.props.tokens.token_contract.spend_CS_Token(
-            this.state.crowdsale_name,//name
-            this.state.crowdsale_time_limit,//time limit
-            web3.toWei(this.price_per_token(), 'ether'),//price per token
-            web3.toWei(this.state.crowdsale_goal, 'ether'),//usign goal for cap
-            web3.toWei(this.state.crowdsale_goal, 'ether'),//actual goal in constructor
-            Math.ceil(this.state.crowdsale_goal / this.price_per_token()),//token gol
-            token_id,//actual token used to create the crowdsale
-            (e, txHash)=>{//callback with txHash, hope for no error
-            if(e){
-              this.props.dispatch({type:"UI_ERR", e:e})
-              // toastr.error(e)
-              return
-            }else{
-              utils.call_when_mined(txHash, function(){
-              utils.hide_spinner('#block-spinner')
-              utils.playSound(crowd_cheer_sound);
-              toastr.info(txHash, 'Token '+token_id+' created a crowdsale')
-
-            })
-
-            toastr.success(txHash, 'Success! Your Crowdsale is being created')
-            console.log(txHash)
-          }
-
-          })
-        }catch(e){
-          console.log('WHHY ????')
-          console.log(e)
-          this.props.dispatch({type:"UI_ERR", e:e})
-
-        }
-
-      })
-    }catch(e){
-      console.log('error caught')
-      console.log(e)
-      this.props.dispatch({type:"UI_ERR", e:e})
-
-    }
 
 
-  }
+
 
   price_per_token(){
     if(!web3){this.props.dispatch({type:"UI_ERR", e:'There is no Web3.... Check MetaMask'}); return } 
@@ -259,15 +165,11 @@ class Side_bar extends React.Component{
     }
 
     return(
-      <div className="side_bar">
+      <div className="create-crowdsale-container">
         <div id="block-spinner"></div>
-
-        <p>Total ERC271Mintable Tokens: {this.props.tokens.totalSupply}</p>
-        <p>Property Tokens: {this.props.tokens.prop_token_counter}</p>
-        <p>Create Crowdsale</p>
-          <p>First buy a token</p>
-        <button onClick={this.buy_token}>Buy Token</button>
-        <div id="sound"></div>
+          <Create_Header
+            title={`Create a Crowdsale`}
+          />
         {this.props.tokens.get_my_tokens.length &&
           <div className='spend_cs_token_contaner'>
             <p>Spend Cowdsale Token</p>
@@ -367,7 +269,7 @@ class Side_bar extends React.Component{
                 onChange={(e)=>{this.setState({crowdsale_wallet:e.target.value})}}
               />
             </div>
-            <button onClick={this.spend_token}>Create Your Crowdsale</button>
+            <Spend_token_btn />
           </div>
 
         }

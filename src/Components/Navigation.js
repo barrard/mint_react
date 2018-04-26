@@ -34,10 +34,14 @@ class Navigation extends React.Component{
     return(
       <div>
         <Navbar color="light" light expand="md">
-          <NavbarBrand href="/">Crowdsale Creator</NavbarBrand>
+            <Link className="logo_link" to="/">
+              <div class="stencil-text">
+                Crowdsale Creator
+              </div>
+            </Link>
           <NavbarToggler onClick={this.toggle} />
           <Collapse isOpen={this.state.isOpen} navbar>
-            <Nav className="ml-auto" navbar>
+            <Nav className="ml-auto nav-gradient" navbar>
               <NavItem>
                 <Link className="nav_link" to="/"                >Home</Link>
               </NavItem>
@@ -45,10 +49,13 @@ class Navigation extends React.Component{
                 <Link className="nav_link" to="/Create"                >Create</Link>
               </NavItem>
               <NavItem>
-                  <Link className="nav_link" to="/Search"     >Search</Link>  
+                  <Link className="nav_link" to="/My_Data"     >My_Data</Link>  
               </NavItem>
               <NavItem>
                   <Link className="nav_link" to="/Tokens" >Tokens</Link>  
+              </NavItem>
+              <NavItem>
+                  <Link className="nav_link" to="/Crowdsale_list" >Crowdsale_list</Link>  
               </NavItem>
               <NavItem>
                   <Link className="nav_link" to="/About" >About</Link>  

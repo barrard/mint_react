@@ -11,11 +11,12 @@ import {
 import Background_img from './Components/background_image.js'
 import Tokens from './Components/Tokens.js';
 import Navigation from './Components/Navigation'
-import Search from './Components/Search'
+import My_Data from './Components/My_Data'
 import Create from './Components/Create'
 import Home from './Components/Home'
 import Crowdsale_list from './Components/Crowdsale_list'
 import { Container, Row, Col } from 'reactstrap';
+import Ball_Atom_Spinner from './Components/small_components/Ball_Atom_Spinner.js'
 
 // import Blockchain_data from './Components/Data/Blockchain_data'
 // import logo from './logo.svg';
@@ -38,6 +39,7 @@ class App extends Component {
     return (
       <Router basename={'mint_crowdsale'}>
       <div className="container">
+      <div className="ball-atom-spinner-container"><Ball_Atom_Spinner /></div>
       <BC_Data /> {/* Blockchain Data lives here */}
       <div id="sound"></div> {/* to enable the sounds for events */}  
 
@@ -52,9 +54,10 @@ class App extends Component {
           </Col>
           <Col xs={12}>
             <Route exact path='/' component={Home} />
+            <Route exact path='/Crowdsale_list' component={Crowdsale_list} />
             <Route exact path='/Create' component={Create} />
             <Route exact path='/Tokens' component={Tokens} />
-            <Route  path='/Search' component={Search} />
+            <Route  path='/My_Data' component={My_Data} />
           </Col>
         </Row>
         </Container>
